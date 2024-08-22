@@ -11,10 +11,10 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Makler
- * 
+ *
  * @property int $id
  * @property string $name
- * 
+ *
  * @property Collection|Geselschaft[] $geselschafts
  *
  * @package App\Models
@@ -30,7 +30,6 @@ class Makler extends Model
 
 	public function geselschafts()
 	{
-		return $this->belongsToMany(Geselschaft::class, 'geselschafts_maklers')
-					->withPivot('id');
+		return $this->belongsToMany(Geselschaft::class)->using(GeselschaftsMakler::class);
 	}
 }

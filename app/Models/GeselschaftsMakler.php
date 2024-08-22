@@ -7,25 +7,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
 /**
  * Class GeselschaftsMakler
- * 
+ *
  * @property int $id
  * @property int $geselschaft_id
  * @property int $makler_id
- * 
+ *
  * @property Geselschaft $geselschaft
  * @property Makler $makler
  * @property Collection|Vnralias[] $vnraliases
  *
  * @package App\Models
  */
-class GeselschaftsMakler extends Model
+class GeselschaftsMakler extends Pivot
 {
 	protected $table = 'geselschafts_maklers';
 	public $timestamps = false;
+    public $incrementing = true;
 
 	protected $casts = [
 		'geselschaft_id' => 'int',
