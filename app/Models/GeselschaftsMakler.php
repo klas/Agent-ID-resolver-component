@@ -15,12 +15,18 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property int $id
  * @property int $geselschaft_id
  * @property int $makler_id
- *
  * @property Geselschaft $geselschaft
  * @property Makler $makler
  * @property Collection|Vnralias[] $vnraliases
- *
  * @package App\Models
+ * @property-read int|null $vnraliases_count
+ * @method static \Illuminate\Database\Eloquent\Builder|GeselschaftsMakler newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GeselschaftsMakler newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GeselschaftsMakler query()
+ * @method static \Illuminate\Database\Eloquent\Builder|GeselschaftsMakler whereGeselschaftId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeselschaftsMakler whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GeselschaftsMakler whereMaklerId($value)
+ * @mixin \Eloquent
  */
 class GeselschaftsMakler extends Pivot
 {
@@ -50,6 +56,6 @@ class GeselschaftsMakler extends Pivot
 
 	public function vnraliases()
 	{
-		return $this->hasMany(Vnralias::class, 'geselschafts_maklers_id');
+		return $this->hasMany(Vnralias::class, 'gm_id');
 	}
 }

@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('vnraliases', function (Blueprint $table) {
             $table->id()->primary();
             $table->string('name');
-            //$table->foreignIdFor(GeselchaftsMaklers::class);
-            $table->bigInteger('geselschafts_maklers_id')->unsigned()
-                ->index('geselschafts_maklers_id');
+            $table->bigInteger('gm_id')->unsigned()
+                ->index('gm_id');
         });
     }
 
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('geselchafts_maklers_id');
+        Schema::dropIfExists('vnraliases');
     }
 };

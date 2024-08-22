@@ -10,12 +10,18 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Cache
- * 
+ *
  * @property string $key
  * @property string $value
  * @property int $expiration
- *
  * @package App\Models
+ * @method static \Illuminate\Database\Eloquent\Builder|Cache newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cache newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cache query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Cache whereExpiration($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cache whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Cache whereValue($value)
+ * @mixin \Eloquent
  */
 class Cache extends Model
 {

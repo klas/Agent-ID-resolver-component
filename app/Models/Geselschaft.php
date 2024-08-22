@@ -14,10 +14,16 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $id
  * @property string $name
- *
  * @property Collection|Makler[] $maklers
- *
  * @package App\Models
+ * @property-read \App\Models\GeselschaftsMakler $pivot
+ * @property-read int|null $maklers_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Geselschaft newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Geselschaft newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Geselschaft query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Geselschaft whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Geselschaft whereName($value)
+ * @mixin \Eloquent
  */
 class Geselschaft extends Model
 {
@@ -30,6 +36,8 @@ class Geselschaft extends Model
 
 	public function maklers()
 	{
-		return $this->belongsToMany(Makler::class)->using(GeselschaftsMakler::class);
+		return $this->belongsToMany(Makler::class, 'geselschafts_maklers')
+            ->withPivot('id')
+            ->using(GeselschaftsMakler::class);
 	}
 }
