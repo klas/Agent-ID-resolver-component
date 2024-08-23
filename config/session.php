@@ -11,7 +11,7 @@ return [
     |
     | This option determines the default session driver that is utilized for
     | incoming requests. Laravel supports a variety of storage options to
-    | persist session data. Database storage is a great default choice.
+    | persist session inputData. Database storage is a great default choice.
     |
     | Supported: "file", "cookie", "database", "apc",
     |            "memcached", "redis", "dynamodb", "array"
@@ -41,7 +41,7 @@ return [
     | Session Encryption
     |--------------------------------------------------------------------------
     |
-    | This option allows you to easily specify that all of your session data
+    | This option allows you to easily specify that all of your session inputData
     | should be encrypted before it's stored. All encryption is performed
     | automatically by Laravel and you may use the session like normal.
     |
@@ -94,7 +94,7 @@ return [
     |--------------------------------------------------------------------------
     |
     | When using one of the framework's cache driven session backends, you may
-    | define the cache store which should be used to store the session data
+    | define the cache store which should be used to store the session inputData
     | between requests. This must match one of your defined cache stores.
     |
     | Affects: "apc", "dynamodb", "memcached", "redis"

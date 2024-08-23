@@ -6,25 +6,40 @@ use App\Builder\StepFilterBuilderInterface;
 
 class DemvStepFilterBuilder implements StepFilterBuilderInterface
 {
-    protected array $data;
+    protected ?string $filterable = null;
 
-    public function setData(array $data): StepFilterBuilderInterface
+    public function setFilterable(string $filterable): StepFilterBuilderInterface
     {
-        $this->data = $data;
+        $this->$filterable = $filterable;
+
+        return $this;
     }
 
-    public function filterNonAscii(string $filterable): StepFilterBuilderInterface
+    public function getFiltered(): ?string
+    {
+        return $this->filterable;
+    }
+
+    public function filterNonAscii(): StepFilterBuilderInterface
     {
         // TODO: Implement filterNonAscii() method.
+
+        return $this;
     }
 
-    public function filterPrefixZeroes(string $filterable): StepFilterBuilderInterface
+    public function filterPrefixZeroes(): StepFilterBuilderInterface
     {
         // TODO: Implement filterPrefixZeroes() method.
+
+        return $this;
     }
 
-    public function filterPrefixNinetyNine(string $filterable): StepFilterBuilderInterface
+    public function filterPrefixNinetyNine(): StepFilterBuilderInterface
     {
         // TODO: Implement filterPrefixNinetyNine() method.
+
+        return $this;
     }
+
+
 }

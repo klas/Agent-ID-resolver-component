@@ -62,7 +62,7 @@ return [
         | Sometimes you may want to append certain traits to all your models.
         | If that is what you need, you may list them bellow.
         | As an example we have a BitBooleans trait which will treat MySQL bit
-        | data type as booleans. You might probably not need it, but it is
+        | inputData type as booleans. You might probably not need it, but it is
         | an example of how you can customize your models.
         |
         */

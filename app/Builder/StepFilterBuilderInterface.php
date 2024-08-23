@@ -3,13 +3,13 @@
 namespace App\Builder;
 
 interface StepFilterBuilderInterface {
-    public function setData(array $data): self;
+    public function setFilterable(string $filterable): self;
 
-    public function filterNonAscii(string $filterable): self;
+    public function getFiltered(): ?string;
 
-    public function filterPrefixZeroes(string $filterable): self;
+    public function filterNonAscii(): self;
 
-    public function filterPrefixNinetyNine(string $filterable): self;
+    public function filterPrefixZeroes(): self;
 
-    public function filterPrefixZeroes(string $filterable): self;
+    public function filterPrefixNinetyNine(): self;
 }

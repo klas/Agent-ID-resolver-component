@@ -25,7 +25,7 @@ class ApiMaklerResolverTest extends TestCase
         $response->assertStatus(201);
         $response->assertJson(
             [
-                'data' => $responseData
+                'inputData' => $responseData
             ]
         );
     }
