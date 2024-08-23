@@ -10,7 +10,7 @@ class DemvStepFilterBuilder implements StepFilterBuilderInterface
 
     public function setFilterable(string $filterable): StepFilterBuilderInterface
     {
-        $this->$filterable = $filterable;
+        $this->filterable = $filterable;
 
         return $this;
     }

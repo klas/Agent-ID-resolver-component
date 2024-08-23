@@ -24,7 +24,7 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
 
         $searchableAliases = collect([]);
 
-        $geselschaft->maklers->each(function($makler) use($searchableAliases) {
+        $geselschaft->maklers->each(function($makler) use(&$searchableAliases) {
             $searchableAliases = $searchableAliases->merge($makler->pivot->vnraliases);
         });
 
@@ -55,7 +55,8 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
             if ($handlerFound = $filterDefiniton->responsible($geselschaft))
             {
                 $filterDefiniton->setStepFilterBuilder($this->stepFilterBuilder);
-                $filterDefiniton->filterChain();
+                $filterDefiniton->runFilterChain();
+                break;
             }
         }
 

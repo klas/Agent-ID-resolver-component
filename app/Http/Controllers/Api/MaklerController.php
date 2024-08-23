@@ -32,7 +32,7 @@ class MaklerController extends Controller
      */
     public function show(ShowMaklerRequest $request)
     {
-        return $this->resolvingStrategy->resolve($request->validated());
+        return response()->json($this->resolvingStrategy->resolve($request->validated()));
     }
 
     /**

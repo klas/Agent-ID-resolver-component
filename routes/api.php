@@ -8,4 +8,4 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::apiResource('maklers', MaklerController::class)->only('show');
+Route::get('makler', [MaklerController::class, 'show']);

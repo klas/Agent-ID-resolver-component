@@ -14,7 +14,7 @@ class DieBayerischeFilterDefinition implements FilterDefinitionInterface
 
     public function setStepFilterBuilder(StepFilterBuilderInterface &$stepFilterBuilder)
     {
-        $this->stepFilterBuilder = $stepFilterBuilder;
+        $this->stepFilterBuilder = &$stepFilterBuilder;
     }
 
     public function responsible(string $name): bool
