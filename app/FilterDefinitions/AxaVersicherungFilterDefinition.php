@@ -5,6 +5,7 @@ namespace App\FilterDefinitions;
 use App\Builder\StepFilterBuilderInterface;
 use App\FilterDefinitions\FilterDefinitionInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class AxaVersicherungFilterDefinition implements FilterDefinitionInterface
 {
@@ -18,7 +19,7 @@ class AxaVersicherungFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return $name === 'Axa Versicherung';
+        return (string)Str::of($name)->snake() === 'axa_versicherung';
     }
 
     public function runFilterChain(): void

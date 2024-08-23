@@ -5,6 +5,7 @@ namespace App\FilterDefinitions;
 use App\Builder\StepFilterBuilderInterface;
 use App\FilterDefinitions\FilterDefinitionInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class DieBayerischeFilterDefinition implements FilterDefinitionInterface
 {
@@ -18,7 +19,7 @@ class DieBayerischeFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return $name === 'die Bayerische';
+        return (string)Str::of($name)->snake() === 'die_bayerische';
     }
 
     public function runFilterChain(): void

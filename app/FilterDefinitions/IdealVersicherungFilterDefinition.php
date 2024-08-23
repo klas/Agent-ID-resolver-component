@@ -5,6 +5,7 @@ namespace App\FilterDefinitions;
 use App\Builder\StepFilterBuilderInterface;
 use App\FilterDefinitions\FilterDefinitionInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class IdealVersicherungFilterDefinition implements FilterDefinitionInterface
 {
@@ -18,7 +19,7 @@ class IdealVersicherungFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return $name === 'Ideal Versicherung';
+        return (string)Str::of($name)->snake() === 'ideal_versicherung';
     }
 
     public function runFilterChain(): void
