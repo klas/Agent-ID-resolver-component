@@ -20,26 +20,33 @@ class DemvStepFilterBuilder implements StepFilterBuilderInterface
         return $this->filterable;
     }
 
-    public function filterNonAscii(): StepFilterBuilderInterface
+    public function filterNonAlphaNumeric(): StepFilterBuilderInterface
     {
-        // TODO: Implement filterNonAscii() method.
+        $this->filterable = preg_replace("/[^A-Za-z0-9]/", '', $this->filterable);
 
         return $this;
     }
 
-    public function filterPrefixZeroes(): StepFilterBuilderInterface
+
+    public function filterNonNumeric(): StepFilterBuilderInterface
     {
-        // TODO: Implement filterPrefixZeroes() method.
+        $this->filterable = preg_replace("/[^0-9]/", '', $this->filterable);
 
         return $this;
     }
 
-    public function filterPrefixNinetyNine(): StepFilterBuilderInterface
+    public function filterPrefixChars(string $char): StepFilterBuilderInterface
     {
-        // TODO: Implement filterPrefixNinetyNine() method.
+        $this->filterable = ltrim($this->filterable, $char);
 
         return $this;
     }
 
+    public function filterSuffixChars(string $char): StepFilterBuilderInterface
+    {
+        $this->filterable = rtrim($this->filterable, $char);
+
+        return $this;
+    }
 
 }

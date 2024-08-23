@@ -7,9 +7,11 @@ interface StepFilterBuilderInterface {
 
     public function getFiltered(): ?string;
 
-    public function filterNonAscii(): self;
+    public function filterNonAlphaNumeric(): self;
 
-    public function filterPrefixZeroes(): self;
+    public function filterNonNumeric(): self;
 
-    public function filterPrefixNinetyNine(): self;
-}
+    public function filterPrefixChars(string $char): self;
+
+    public function filterSuffixChars(string $char): self;
+    }
