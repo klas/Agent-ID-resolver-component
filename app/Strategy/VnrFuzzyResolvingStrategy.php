@@ -8,7 +8,7 @@ use App\Strategy\VnrResolvingStrategyInterface;
 class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
 {
 
-    public function resolve(array $data = []): Makler
+    public function resolve(array $data = []): ?Makler
     {
         // TODO: Implement resolve() method.
     }
