@@ -2,12 +2,12 @@
 
 namespace App\Strategy;
 
-use App\Models\Makler;
+use App\DTO\MaklerDTO;
 
 class VnrAlgoliaResolvingStrategy implements VnrResolvingStrategyInterface
 {
 
-    public function resolve(array $data = []): ?Makler
+    public function resolve(array $data = []): ?MaklerDTO
     {
         // TODO: Implement resolve() method.
     }

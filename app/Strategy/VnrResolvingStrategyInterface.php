@@ -2,8 +2,8 @@
 
 namespace App\Strategy;
 
-use App\Models\Makler;
+use App\DTO\MaklerDTO;
 
 interface VnrResolvingStrategyInterface {
-    public function resolve(array $data = []): ?Makler;
+    public function resolve(array $data = []): ?MaklerDTO;
 }

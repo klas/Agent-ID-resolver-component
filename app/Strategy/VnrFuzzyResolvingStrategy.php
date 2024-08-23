@@ -2,13 +2,13 @@
 
 namespace App\Strategy;
 
-use App\Models\Makler;
+use App\DTO\MaklerDTO;
 use App\Strategy\VnrResolvingStrategyInterface;
 
 class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
 {
 
-    public function resolve(array $data = []): ?Makler
+    public function resolve(array $data = []): ?MaklerDTO
     {
         // TODO: Implement resolve() method.
     }
