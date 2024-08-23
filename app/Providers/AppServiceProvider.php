@@ -2,10 +2,16 @@
 
 namespace App\Providers;
 
+use App\Strategy\VnrResolvingStrategyInterface;
+use App\Strategy\VnrStepFilteringResolvingStrategy;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public $bindings = [
+        VnrResolvingStrategyInterface::class => VnrStepFilteringResolvingStrategy::class,
+    ];
+
     /**
      * Register any application services.
      */

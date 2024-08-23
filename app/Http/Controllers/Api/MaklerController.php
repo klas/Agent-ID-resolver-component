@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ShowMaklerRequest;
+use App\Strategy\VnrResolvingStrategyInterface;
 use Illuminate\Http\Request;
 
 class MaklerController extends Controller
 {
+    public function __construct(protected VnrResolvingStrategyInterface $resolvingStrategy) {}
+
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +32,7 @@ class MaklerController extends Controller
      */
     public function show(ShowMaklerRequest $request)
     {
-        //
+        return $this->resolvingStrategy->resolve($request->validated());
     }
 
     /**
