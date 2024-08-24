@@ -16,25 +16,25 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
 
     public function resolve(array $data = []): ?MaklerDTO
     {
-        $filteredVnr = $this->filterVnr($data['vnr'], $data['geselschaft']);
         $geselschaft = Geselschaft::whereName($data['geselschaft'])->with('maklers')->first();
 
         // Try to match with stored aliases
-        $maklers = $geselschaft->maklers;
-
         $searchableAliases = collect([]);
 
         $geselschaft->maklers->each(function($makler) use(&$searchableAliases) {
             $searchableAliases = $searchableAliases->merge($makler->pivot->vnraliases);
         });
 
-        $makler = $searchableAliases->firstWhere('name', '==', $filteredVnr)?->geselschafts_makler->makler;
+        $makler = $searchableAliases->firstWhere('name', '==', $data['vnr'])?->geselschafts_makler->makler;
 
+        // No 100% match, try matching filtered value
+        if (!$makler) {
+            $filteredVnr = $this->filterVnr($data['vnr'], $data['geselschaft']);
+            $makler = $searchableAliases->firstWhere('name', '==', $filteredVnr)?->geselschafts_makler->makler;
+        }
 
-
-        // No 100% match, try matching filtered stored aliases
-
-        // Still no match, try searching
+        // Still no match, try matching filtered stored aliases with filtered value, if match store it for next time
+        //$makler = $searchableAliases->firstWhere('name', '==', $filteredVnr)?->geselschafts_makler->makler;
 
 
         if ($makler) {
@@ -46,16 +46,16 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
 
     protected function filterVnr(string $filterable, string $geselschaft): ?string
     {
-        $filterDefinitons = App::tagged('filter_definition');
+        $filterDefinitions = App::tagged('filter_definition');
 
         $this->stepFilterBuilder->setFilterable($filterable);
         $handlerFound = false;
 
-        foreach ($filterDefinitons AS $filterDefiniton) {
-            if ($handlerFound = $filterDefiniton->responsible($geselschaft))
+        foreach ($filterDefinitions AS $filterDefinition) {
+            if ($handlerFound = $filterDefinition->responsible($geselschaft))
             {
-                $filterDefiniton->setStepFilterBuilder($this->stepFilterBuilder);
-                $filterDefiniton->runFilterChain();
+                $filterDefinition->setStepFilterBuilder($this->stepFilterBuilder);
+                $filterDefinition->runFilterChain();
                 break;
             }
         }
