@@ -16,7 +16,7 @@ class MaklerController extends Controller
     public function show(ShowMaklerRequest $request): JsonResponse
     {
         $response = $this->resolvingStrategy->resolve($request->validated())
-            ?? throw new NotFoundHttpException('Makler not found');
+            ?? throw new NotFoundHttpException('Makler not found', null, 400, ['Content-Type' =>'application/problem+json']);
 
         return response()->json($response);
     }

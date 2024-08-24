@@ -16,7 +16,7 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
 
     public function resolve(array $data = []): ?MaklerDTO
     {
-        $geselschaft = Geselschaft::whereName($data['geselschaft'])->with('maklers')->first();
+        $geselschaft = Geselschaft::whereName($data['geselschaft'])->with('maklers')->firstOrFail();
 
         // Try to match with stored aliases
         $searchableAliases = collect([]);
