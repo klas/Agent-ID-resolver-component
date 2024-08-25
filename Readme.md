@@ -22,8 +22,14 @@ Um eine korrekt formatierte JSON-Antwort einschließlich Fehlermeldungen zu erha
 
 
 ============================================
+## Struktur
+* Die Umwandlung wird durch die Umwandlungsstrategie gewährleistet,
+* VnrStepFilteringResolvingStrategy basiert auf dem Filter Builder, bei dem Filterdefinitionen (die für jede Gesellschaft definiert werden, da sie unterschiedliche Formate verwenden) die verfügbaren Filter kombinieren, um normalisierte VNR zu erhalten.
+## Beschränkungen
+* Nur VnrStepFilteringResolvingStrategy ist implementiert
+* Es gibt keine Berechtigungsprüfung
 
-
+============================================
 ### Einleitung
 Folgend findest du wie besprochen eine kleine Aufgabe, die eine unserer realen Herausforderungen zeigt.
 
