@@ -40,7 +40,7 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
         }
 
         // Still no match, try matching filtered stored aliases with filtered value,
-        // if match store unfiltered and filtered value for next time
+        // if match store unfiltered and filtered value for next time for performance
         if (!$makler) {
             $searchableAliases->each(function($alias) use(&$makler, $filteredVnr, $data, $geselschaft) {
                 if($filteredVnr === $this->filterVnr($alias->name, $data['geselschaft']))

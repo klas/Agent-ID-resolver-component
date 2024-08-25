@@ -13,21 +13,18 @@ use Tests\TestCase;
 
 class ApiMaklerResolverTest extends TestCase
 {
-    public function testResolverReturnsValidData()
+    public function testShowReturnsValidData()
     {
-        $data = Activity::factory()->makeOne();
-        $responseData = (new ActivityResource($data))->resolve();
-        unset($responseData['id'], $responseData['created_at'], $responseData['updated_at']);
+        $vnr = '00654564';
+        $geselchaft = 'Haftpflichtkasse Darmstadt';
 
+        $response = $this->get("http://localhost/api/makler?vnr=$vnr&geselschaft=$geselchaft");
 
-        $response = $this->call('GET', '/api/maklers', $data->toArray());
-        //$response->dump();
-        $response->assertStatus(201);
+        $response->assertStatus(Response::HTTP_OK);
         $response->assertJson(
             [
-                'inputData' => $responseData
+                'name' => 'Max Mustermann'
             ]
         );
     }
-
 }

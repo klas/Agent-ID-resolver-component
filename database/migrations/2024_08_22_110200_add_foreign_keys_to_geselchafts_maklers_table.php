@@ -28,9 +28,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('geselchafts_maklers', function (Blueprint $table) {
-            $table->dropForeign('geselchaft_id');
-            $table->dropForeign('makler_id');
+        Schema::table('geselschafts_maklers', function (Blueprint $table) {
+            $table->dropForeign('geselschaft_fk');
+            $table->dropForeign('makler_fk');
         });
     }
 };

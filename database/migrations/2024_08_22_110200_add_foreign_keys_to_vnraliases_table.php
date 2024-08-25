@@ -27,7 +27,7 @@ return new class extends Migration
     public function down()
     {
         Schema::table('vnraliases', function (Blueprint $table) {
-            $table->dropForeign('gm_id');
+            $table->dropForeign('gm_fk');
         });
     }
 };
