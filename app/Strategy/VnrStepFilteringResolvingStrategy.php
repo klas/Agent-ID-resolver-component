@@ -6,6 +6,7 @@ use App\Builder\StepFilterBuilderInterface;
 use App\DTO\MaklerDTO;
 use App\Models\Geselschaft;
 use App\Models\GeselschaftsMakler;
+use App\Models\Vnralias;
 use App\Strategy\VnrResolvingStrategyInterface;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -26,27 +27,27 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
             $searchableAliases = $searchableAliases->merge($makler->pivot->vnraliases);
         });
 
-        $makler = $searchableAliases->firstWhere('name', '==', $data['vnr'])?->geselschafts_makler->makler;
+        $makler = $searchableAliases->whereStrict('name', $data['vnr'])->first()?->geselschafts_makler->makler;
 
         // No 100% match, try matching filtered value
         if (!$makler) {
             $filteredVnr = $this->filterVnr($data['vnr'], $data['geselschaft']);
-            if($makler = $searchableAliases->firstWhere('name', '==', $filteredVnr)
-                ?->geselschafts_makler->makler)
+            $alias = $searchableAliases->whereStrict('name', $filteredVnr)->first();
+            if($makler = $alias?->geselschafts_makler->makler)
             {
-                $makler->pivot->vnraliases()->create(['name' => $data['vnr'], 'gm_id' => $makler->pivot->id]);
+                Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
             };
         }
 
         // Still no match, try matching filtered stored aliases with filtered value,
         // if match store unfiltered and filtered value for next time
         if (!$makler) {
-            $searchableAliases->each(function($alias) use(&$makler, $filteredVnr, $data) {
+            $searchableAliases->each(function($alias) use(&$makler, $filteredVnr, $data, $geselschaft) {
                 if($filteredVnr === $this->filterVnr($alias->name, $data['geselschaft']))
                 {
                     $makler = $alias?->geselschafts_makler->makler;
-                    $makler->pivot->vnraliases()->create(['name' => $data['vnr'], 'gm_id' => $makler->pivot->id]);
-                    $makler->pivot->vnraliases()->create(['name' => $filteredVnr, 'gm_id' => $makler->pivot->id]);
+                    Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
+                    Vnralias::create(['name' => $filteredVnr, 'gm_id' => $alias->gm_id]);
                     return false; // break loop
                 };
             });
