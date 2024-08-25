@@ -1,3 +1,29 @@
+## Installation
+* Klone das Repo
+* Herstellerabhängigkeiten installieren: `docker run --rm --interactive --tty --volume $PWD:/app composer install --ignore-platform-reqs --no-scripts`
+* Bei fehlenden Klassen: `docker run --rm --interactive --tty --volume $PWD:/app composer dump-autoload`
+* env-Datei kopieren: `cp .env.example .env`
+* Container starten: `vendor/bin/sail up -d`
+* RMigrationen und Seeders ausführen: `vendor/bin/sail artisan migrate:fresh --seed`
+* API veröffentlichen: `vendor/bin/sail artisan install:api`
+
+## API
+Um eine korrekt formatierte JSON-Antwort einschließlich Fehlermeldungen zu erhalten, ist der Request-Header `Accept: application/json` zu senden.
+
+##### Makler API
+* Show: GET `/api/makler?vnr={VNR}&geselschaft={GESELSCHAFT NAME}`
+* Beilspiel Antwort:
+`  {
+  "name": "Max Mustermann"
+  }`
+
+## Testen
+* Tests ausführen `vendor/bin/sail artisan test`
+
+
+============================================
+
+
 ### Einleitung
 Folgend findest du wie besprochen eine kleine Aufgabe, die eine unserer realen Herausforderungen zeigt.
 
