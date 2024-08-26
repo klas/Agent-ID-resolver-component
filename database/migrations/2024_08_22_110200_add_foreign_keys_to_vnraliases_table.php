@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('vnraliases', function (Blueprint $table) {
             $table->foreign(['gm_id'], 'gm_fk')->references(['id'])
-                ->on('geselschafts_maklers')->onUpdate('CASCADE')->onDelete('CASCADE');
+                ->on('gesellschafts_maklers')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

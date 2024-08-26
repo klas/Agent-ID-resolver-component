@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name
  * @property int $gm_id
- * @property GeselschaftsMakler $geselschafts_makler
+ * @property GesellschaftsMakler $gesellschafts_makler
  * @package App\Models
  * @method static \Illuminate\Database\Eloquent\Builder|Vnralias newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Vnralias newQuery()
@@ -38,8 +38,8 @@ class Vnralias extends Model
 		'gm_id'
 	];
 
-	public function geselschafts_makler()
+	public function gesellschafts_makler()
 	{
-		return $this->belongsTo(GeselschaftsMakler::class, 'gm_id');
+		return $this->belongsTo(GesellschaftsMakler::class, 'gm_id');
 	}
 }

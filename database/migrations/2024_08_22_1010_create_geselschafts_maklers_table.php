@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('geselschafts_maklers', function (Blueprint $table) {
+        Schema::create('gesellschafts_maklers', function (Blueprint $table) {
             $table->id()->primary();
-            //$table->foreignIdFor(Geselschafts::class);
+            //$table->foreignIdFor(Gesellschafts::class);
             //$table->foreignIdFor(Maklers::class);
-            $table->bigInteger('geselschaft_id')->unsigned()->index('geselschaft_id');
+            $table->bigInteger('gesellschaft_id')->unsigned()->index('gesellschaft_id');
             $table->bigInteger('makler_id')->unsigned()->index('makler_id');
 
-            $table->unique(['geselschaft_id', 'makler_id']);
+            $table->unique(['gesellschaft_id', 'makler_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('geselschafts_maklers');
+        Schema::dropIfExists('gesellschafts_maklers');
     }
 };

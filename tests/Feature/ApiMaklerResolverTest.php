@@ -20,7 +20,7 @@ class ApiMaklerResolverTest extends TestCase
         $maklers['max'] = 'Max Mustermann';
         $maklers['not_max'] = 'Not Max';
 
-        $geselschaftsVnrs['max'] = [
+        $gesellschaftsVnrs['max'] = [
             'Haftpflichtkasse Darmstadt' => ['00654564', '654564', '654-564'],
             'WWK' => ['Q412548787', '412548787'],
             'Axa Versicherung' => ['15154184714-000', '15154184714', '99/15154184714'],
@@ -28,7 +28,7 @@ class ApiMaklerResolverTest extends TestCase
             'die Bayerische' => ['54501R784', '54501-R784', '54501784'],
         ];
 
-        $geselschaftsVnrs['not_max'] = [
+        $gesellschaftsVnrs['not_max'] = [
             'Haftpflichtkasse Darmstadt' => ['00654574', '654574', '654-574'],
             'WWK' => ['Q412548777', '412548777'],
             'Axa Versicherung' => ['15154184774-000', '15154184774', '99/15154184774'],
@@ -36,10 +36,10 @@ class ApiMaklerResolverTest extends TestCase
             'die Bayerische' => ['54501R774', '54501-R774', '54501774'],
         ];
 
-        foreach ($geselschaftsVnrs AS $key => $maklerVnrs) {
-            foreach ($maklerVnrs AS $geselschaft => $vnrs) {
+        foreach ($gesellschaftsVnrs AS $key => $maklerVnrs) {
+            foreach ($maklerVnrs AS $gesellschaft => $vnrs) {
                 foreach ($vnrs AS $vnr) {
-                    $response = $this->get(self::BASIC_URL . "?vnr=$vnr&geselschaft=$geselschaft");
+                    $response = $this->get(self::BASIC_URL . "?vnr=$vnr&gesellschaft=$gesellschaft");
 
                     $response->assertStatus(Response::HTTP_OK);
                     $response->assertJson(
@@ -53,12 +53,12 @@ class ApiMaklerResolverTest extends TestCase
     }
 
     public function testShowReturnsErrorOnInvalidData() {
-        $response = $this->get(self::BASIC_URL . "?vnr=00654564&geselschaft=abc", ['Accept' =>'application/json']);
+        $response = $this->get(self::BASIC_URL . "?vnr=00654564&gesellschaft=abc", ['Accept' =>'application/json']);
 
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJson(
             [
-                'message' => 'No query results for model [App\\Models\\Geselschaft].'
+                'message' => 'No query results for model [App\\Models\\Gesellschaft].'
             ]
         );
     }

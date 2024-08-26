@@ -4,8 +4,8 @@ namespace App\Strategy;
 
 use App\Builder\StepFilterBuilderInterface;
 use App\DTO\MaklerDTO;
-use App\Models\Geselschaft;
-use App\Models\GeselschaftsMakler;
+use App\Models\Gesellschaft;
+use App\Models\GesellschaftsMakler;
 use App\Models\Vnralias;
 use App\Strategy\VnrResolvingStrategyInterface;
 use Illuminate\Support\Facades\App;
@@ -18,22 +18,22 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
 
     public function resolve(array $data = []): ?MaklerDTO
     {
-        $geselschaft = Geselschaft::whereName($data['geselschaft'])->with('maklers')->firstOrFail();
+        $gesellschaft = Gesellschaft::whereName($data['gesellschaft'])->with('maklers')->firstOrFail();
 
         // Try to match with stored aliases
         $searchableAliases = collect([]);
 
-        $geselschaft->maklers->each(function($makler) use(&$searchableAliases) {
+        $gesellschaft->maklers->each(function($makler) use(&$searchableAliases) {
             $searchableAliases = $searchableAliases->merge($makler->pivot->vnraliases);
         });
 
-        $makler = $searchableAliases->whereStrict('name', $data['vnr'])->first()?->geselschafts_makler->makler;
+        $makler = $searchableAliases->whereStrict('name', $data['vnr'])->first()?->gesellschafts_makler->makler;
 
         // No 100% match, try matching filtered value
         if (!$makler) {
-            $filteredVnr = $this->filterVnr($data['vnr'], $data['geselschaft']);
+            $filteredVnr = $this->filterVnr($data['vnr'], $data['gesellschaft']);
             $alias = $searchableAliases->whereStrict('name', $filteredVnr)->first();
-            if($makler = $alias?->geselschafts_makler->makler)
+            if($makler = $alias?->gesellschafts_makler->makler)
             {
                 Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
             };
@@ -42,10 +42,10 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
         // Still no match, try matching filtered stored aliases with filtered value,
         // if match store unfiltered and filtered value for next time for performance
         if (!$makler) {
-            $searchableAliases->each(function($alias) use(&$makler, $filteredVnr, $data, $geselschaft) {
-                if($filteredVnr === $this->filterVnr($alias->name, $data['geselschaft']))
+            $searchableAliases->each(function($alias) use(&$makler, $filteredVnr, $data, $gesellschaft) {
+                if($filteredVnr === $this->filterVnr($alias->name, $data['gesellschaft']))
                 {
-                    $makler = $alias?->geselschafts_makler->makler;
+                    $makler = $alias?->gesellschafts_makler->makler;
                     Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
                     Vnralias::create(['name' => $filteredVnr, 'gm_id' => $alias->gm_id]);
                     return false; // break loop
@@ -60,7 +60,7 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
         return null;
     }
 
-    protected function filterVnr(string $filterable, string $geselschaft): ?string
+    protected function filterVnr(string $filterable, string $gesellschaft): ?string
     {
         $filterDefinitions = App::tagged('filter_definition');
 
@@ -68,7 +68,7 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
         $handlerFound = false;
 
         foreach ($filterDefinitions AS $filterDefinition) {
-            if ($handlerFound = $filterDefinition->responsible($geselschaft))
+            if ($handlerFound = $filterDefinition->responsible($gesellschaft))
             {
                 $filterDefinition->setStepFilterBuilder($this->stepFilterBuilder);
                 $filterDefinition->runFilterChain();

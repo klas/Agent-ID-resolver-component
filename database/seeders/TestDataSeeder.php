@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Geselschaft;
+use App\Models\Gesellschaft;
 use App\Models\Makler;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -20,7 +20,7 @@ class TestDataSeeder extends Seeder
         $maklers['max'] = Makler::create(['name' => 'Max Mustermann']);
         $maklers['not_max'] = Makler::create(['name' => 'Not Max']);
 
-        $geselschaftsVnrs['max'] = [
+        $gesellschaftsVnrs['max'] = [
             'Haftpflichtkasse Darmstadt' => ['00654564', '654564', '654-564'],
             'WWK' => ['Q412548787', '412548787'],
             'Axa Versicherung' => ['15154184714-000', '15154184714', '99/15154184714'],
@@ -28,7 +28,7 @@ class TestDataSeeder extends Seeder
             'die Bayerische' => ['54501R784', '54501-R784', '54501784'],
         ];
 
-        $geselschaftsVnrs['not_max'] = [
+        $gesellschaftsVnrs['not_max'] = [
             'Haftpflichtkasse Darmstadt' => ['00654574', '654574', '654-574'],
             'WWK' => ['Q412548777', '412548777'],
             'Axa Versicherung' => ['15154184774-000', '15154184774', '99/15154184774'],
@@ -36,10 +36,10 @@ class TestDataSeeder extends Seeder
             'die Bayerische' => ['54501R774', '54501-R774', '54501774'],
         ];
 
-        foreach ($geselschaftsVnrs AS $key => $maklerVnrs) {
-            foreach ($maklerVnrs AS $geselschaft => $vnrs) {
-                $ges = Geselschaft::firstOrCreate(
-                    ['name' => $geselschaft]
+        foreach ($gesellschaftsVnrs AS $key => $maklerVnrs) {
+            foreach ($maklerVnrs AS $gesellschaft => $vnrs) {
+                $ges = Gesellschaft::firstOrCreate(
+                    ['name' => $gesellschaft]
                 );
 
                 $ges->maklers()->attach($maklers[$key]);

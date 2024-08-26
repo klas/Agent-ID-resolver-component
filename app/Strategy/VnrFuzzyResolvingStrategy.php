@@ -3,7 +3,7 @@
 namespace App\Strategy;
 
 use App\DTO\MaklerDTO;
-use App\Models\Geselschaft;
+use App\Models\Gesellschaft;
 use App\Models\Vnralias;
 use App\Strategy\VnrResolvingStrategyInterface;
 

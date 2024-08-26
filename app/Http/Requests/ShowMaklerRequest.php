@@ -23,7 +23,7 @@ class ShowMaklerRequest extends FormRequest
     {
         return [
             'vnr' => 'string',
-            'geselschaft' => 'string',
+            'gesellschaft' => 'string',
         ];
     }
 }
