@@ -11,7 +11,8 @@
 Um eine korrekt formatierte JSON-Antwort einschließlich Fehlermeldungen zu erhalten, ist der Request-Header `Accept: application/json` zu senden.
 
 ##### Makler API
-* Show: GET `/api/makler?vnr={VNR}&geselschaft={GESELSCHAFT NAME}`
+* Show: GET `/api/makler?vnr={VNR}&geselschaft={GESELLSCHAFT NAME}` - erwartet immer VNR und Gesellschaft Name
+
 * Beilspiel Antwort:
 `  {
   "name": "Max Mustermann"
