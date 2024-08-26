@@ -1,13 +1,11 @@
 <?php
 
-namespace App\FilterDefinitions;
+namespace App\CoR\FilterDefinitions;
 
 use App\Builder\StepFilterBuilderInterface;
-use App\FilterDefinitions\FilterDefinitionInterface;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class WWKFilterDefinition implements FilterDefinitionInterface
+class HaftpflichtkasseDarmstadtFilterDefinition implements FilterDefinitionInterface
 {
 
     protected StepFilterBuilderInterface $stepFilterBuilder;
@@ -19,11 +17,11 @@ class WWKFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string)Str::of($name)->snake() === 'wwk';
+        return (string)Str::of($name)->snake() === 'haftpflichtkasse_darmstadt';
     }
 
     public function runFilterChain(): void
     {
-        $this->stepFilterBuilder->filterPrefixChars('Q')->filterNonNumeric();
+        $this->stepFilterBuilder->filterPrefixChars('0')->filterNonNumeric();
     }
 }

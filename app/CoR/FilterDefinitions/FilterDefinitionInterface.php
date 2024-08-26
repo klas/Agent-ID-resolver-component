@@ -1,9 +1,8 @@
 <?php
 
-namespace App\FilterDefinitions;
+namespace App\CoR\FilterDefinitions;
 
 use App\Builder\StepFilterBuilderInterface;
-use Illuminate\Support\Collection;
 
 interface FilterDefinitionInterface {
     public function setStepFilterBuilder(StepFilterBuilderInterface &$stepFilterBuilder);

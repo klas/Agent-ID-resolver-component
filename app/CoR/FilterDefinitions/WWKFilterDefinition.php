@@ -1,13 +1,11 @@
 <?php
 
-namespace App\FilterDefinitions;
+namespace App\CoR\FilterDefinitions;
 
 use App\Builder\StepFilterBuilderInterface;
-use App\FilterDefinitions\FilterDefinitionInterface;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
-class IdealVersicherungFilterDefinition implements FilterDefinitionInterface
+class WWKFilterDefinition implements FilterDefinitionInterface
 {
 
     protected StepFilterBuilderInterface $stepFilterBuilder;
@@ -19,11 +17,11 @@ class IdealVersicherungFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string)Str::of($name)->snake() === 'ideal_versicherung';
+        return (string)Str::of($name)->snake() === 'wwk';
     }
 
     public function runFilterChain(): void
     {
-        $this->stepFilterBuilder->filterPrefixChars('0')->filterNonAlphaNumeric();
+        $this->stepFilterBuilder->filterPrefixChars('Q')->filterNonNumeric();
     }
 }

@@ -4,11 +4,11 @@ namespace App\Providers;
 
 use App\Builder\DemvStepFilterBuilder;
 use App\Builder\StepFilterBuilderInterface;
-use App\FilterDefinitions\AxaVersicherungFilterDefinition;
-use App\FilterDefinitions\DieBayerischeFilterDefinition;
-use App\FilterDefinitions\HaftpflichtkasseDarmstadtFilterDefinition;
-use App\FilterDefinitions\IdealVersicherungFilterDefinition;
-use App\FilterDefinitions\WWKFilterDefinition;
+use App\CoR\FilterDefinitions\AxaVersicherungFilterDefinition;
+use App\CoR\FilterDefinitions\DieBayerischeFilterDefinition;
+use App\CoR\FilterDefinitions\HaftpflichtkasseDarmstadtFilterDefinition;
+use App\CoR\FilterDefinitions\IdealVersicherungFilterDefinition;
+use App\CoR\FilterDefinitions\WWKFilterDefinition;
 use App\Strategy\VnrResolvingStrategyInterface;
 use App\Strategy\VnrStepFilteringResolvingStrategy;
 use Illuminate\Support\ServiceProvider;
