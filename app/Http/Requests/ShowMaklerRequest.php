@@ -22,8 +22,8 @@ class ShowMaklerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vnr' => 'string',
-            'gesellschaft' => 'string',
+            'vnr' => ['required', 'string'],
+            'gesellschaft' => ['required', 'string'],
         ];
     }
 }

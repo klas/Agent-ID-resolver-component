@@ -12,7 +12,7 @@ Um eine korrekt formatierte JSON-Antwort einschließlich Fehlermeldungen zu erha
 
 ##### Makler API
 * Show: GET `/api/makler?vnr={VNR}&gesellschaft={GESELLSCHAFT NAME}` - erwartet immer VNR und Gesellschaft Name
-
+* Beispiel ANfrage: `http://localhost/api/makler?vnr=00654564&gesellschaft=Haftpflichtkasse Darmstadt`
 * Beilspiel Antwort:
 `  {
   "name": "Max Mustermann"
