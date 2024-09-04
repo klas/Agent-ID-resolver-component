@@ -16,7 +16,7 @@ class AxaVersicherungFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of($name)->snake() === 'axa_versicherung';
+        return (string) Str::of(Str::lower($name))->snake() === 'axa_versicherung';
     }
 
     public function runFilterChain(): void

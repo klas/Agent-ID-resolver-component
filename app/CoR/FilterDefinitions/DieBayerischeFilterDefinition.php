@@ -16,7 +16,7 @@ class DieBayerischeFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of($name)->snake() === 'die_bayerische';
+        return (string) Str::of(Str::lower($name))->snake() === 'die_bayerische';
     }
 
     public function runFilterChain(): void

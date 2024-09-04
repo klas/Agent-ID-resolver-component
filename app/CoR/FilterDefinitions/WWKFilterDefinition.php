@@ -16,7 +16,7 @@ class WWKFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of($name)->snake() === 'wwk';
+        return (string) Str::of(Str::lower($name))->snake() === 'wwk';
     }
 
     public function runFilterChain(): void

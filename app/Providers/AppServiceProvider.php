@@ -17,8 +17,8 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     public $bindings = [
-        //VnrResolvingStrategyInterface::class => VnrStepFilteringResolvingStrategy::class,
-        VnrResolvingStrategyInterface::class => VnrFuzzyResolvingStrategy::class,
+        VnrResolvingStrategyInterface::class => VnrStepFilteringResolvingStrategy::class,
+        //VnrResolvingStrategyInterface::class => VnrFuzzyResolvingStrategy::class,
         StepFilterBuilderInterface::class => DemvStepFilterBuilder::class,
     ];
 

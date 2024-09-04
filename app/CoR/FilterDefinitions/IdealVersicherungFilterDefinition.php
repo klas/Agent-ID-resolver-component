@@ -16,7 +16,7 @@ class IdealVersicherungFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of($name)->snake() === 'ideal_versicherung';
+        return (string) Str::of(Str::lower($name))->snake() === 'ideal_versicherung';
     }
 
     public function runFilterChain(): void

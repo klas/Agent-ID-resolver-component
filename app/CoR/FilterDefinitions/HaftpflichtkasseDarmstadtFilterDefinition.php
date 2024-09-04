@@ -16,7 +16,7 @@ class HaftpflichtkasseDarmstadtFilterDefinition implements FilterDefinitionInter
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of($name)->snake() === 'haftpflichtkasse_darmstadt';
+        return (string) Str::of(Str::lower($name))->snake() === 'haftpflichtkasse_darmstadt';
     }
 
     public function runFilterChain(): void
