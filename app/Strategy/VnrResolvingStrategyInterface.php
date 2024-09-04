@@ -4,6 +4,7 @@ namespace App\Strategy;
 
 use App\DTO\MaklerDTO;
 
-interface VnrResolvingStrategyInterface {
+interface VnrResolvingStrategyInterface
+{
     public function resolve(array $data = []): ?MaklerDTO;
 }

@@ -4,10 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Gesellschaft;
 use App\Models\Makler;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class TestDataSeeder extends Seeder
 {
@@ -36,8 +33,8 @@ class TestDataSeeder extends Seeder
             'die Bayerische' => ['54501R774', '54501-R774', '54501774'],
         ];
 
-        foreach ($gesellschaftsVnrs AS $key => $maklerVnrs) {
-            foreach ($maklerVnrs AS $gesellschaft => $vnrs) {
+        foreach ($gesellschaftsVnrs as $key => $maklerVnrs) {
+            foreach ($maklerVnrs as $gesellschaft => $vnrs) {
                 $ges = Gesellschaft::firstOrCreate(
                     ['name' => $gesellschaft]
                 );
@@ -49,7 +46,7 @@ class TestDataSeeder extends Seeder
                 // Need to get it this way, pivot is empty in the original makler
                 $makler = $ges->maklers->firstWhere('name', '==', $maklers[$key]->name);
 
-                foreach ($vnrs AS $vnr) {
+                foreach ($vnrs as $vnr) {
                     $makler->pivot->vnraliases()->create(['name' => $vnr, 'gm_id' => $makler->pivot->id]);
                 }
             }

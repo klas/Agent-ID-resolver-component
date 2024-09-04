@@ -18,44 +18,47 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property Gesellschaft $gesellschaft
  * @property Makler $makler
  * @property Collection|Vnralias[] $vnraliases
- * @package App\Models
  * @property-read int|null $vnraliases_count
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|GesellschaftsMakler newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GesellschaftsMakler newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GesellschaftsMakler query()
  * @method static \Illuminate\Database\Eloquent\Builder|GesellschaftsMakler whereGesellschaftId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GesellschaftsMakler whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|GesellschaftsMakler whereMaklerId($value)
+ *
  * @mixin \Eloquent
  */
 class GesellschaftsMakler extends Pivot
 {
-	protected $table = 'gesellschafts_maklers';
-	public $timestamps = false;
+    protected $table = 'gesellschafts_maklers';
+
+    public $timestamps = false;
+
     public $incrementing = true;
 
-	protected $casts = [
-		'gesellschaft_id' => 'int',
-		'makler_id' => 'int'
-	];
+    protected $casts = [
+        'gesellschaft_id' => 'int',
+        'makler_id' => 'int',
+    ];
 
-	protected $fillable = [
-		'gesellschaft_id',
-		'makler_id'
-	];
+    protected $fillable = [
+        'gesellschaft_id',
+        'makler_id',
+    ];
 
-	public function gesellschaft()
-	{
-		return $this->belongsTo(Gesellschaft::class);
-	}
+    public function gesellschaft()
+    {
+        return $this->belongsTo(Gesellschaft::class);
+    }
 
-	public function makler()
-	{
-		return $this->belongsTo(Makler::class);
-	}
+    public function makler()
+    {
+        return $this->belongsTo(Makler::class);
+    }
 
-	public function vnraliases()
-	{
-		return $this->hasMany(Vnralias::class, 'gm_id');
-	}
+    public function vnraliases()
+    {
+        return $this->hasMany(Vnralias::class, 'gm_id');
+    }
 }

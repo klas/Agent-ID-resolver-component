@@ -2,18 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Http\Resources\ActivityResource;
-use App\Models\Activity;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 use Tests\TestCase;
 
 class ApiMaklerResolverTest extends TestCase
 {
-    private const BASIC_URL = "http://localhost/api/makler";
+    private const BASIC_URL = 'http://localhost/api/makler';
 
     public function testShowReturnsValidData()
     {
@@ -36,15 +30,15 @@ class ApiMaklerResolverTest extends TestCase
             'die Bayerische' => ['54501R774', '54501-R774', '54501774'],
         ];
 
-        foreach ($gesellschaftsVnrs AS $key => $maklerVnrs) {
-            foreach ($maklerVnrs AS $gesellschaft => $vnrs) {
-                foreach ($vnrs AS $vnr) {
-                    $response = $this->get(self::BASIC_URL . "?vnr=$vnr&gesellschaft=$gesellschaft");
+        foreach ($gesellschaftsVnrs as $key => $maklerVnrs) {
+            foreach ($maklerVnrs as $gesellschaft => $vnrs) {
+                foreach ($vnrs as $vnr) {
+                    $response = $this->get(self::BASIC_URL."?vnr=$vnr&gesellschaft=$gesellschaft");
 
                     $response->assertStatus(Response::HTTP_OK);
                     $response->assertJson(
                         [
-                            'name' => $maklers[$key]
+                            'name' => $maklers[$key],
                         ]
                     );
                 }
@@ -52,13 +46,14 @@ class ApiMaklerResolverTest extends TestCase
         }
     }
 
-    public function testShowReturnsErrorOnInvalidData() {
-        $response = $this->get(self::BASIC_URL . "?vnr=00654564&gesellschaft=abc", ['Accept' =>'application/json']);
+    public function testShowReturnsErrorOnInvalidData()
+    {
+        $response = $this->get(self::BASIC_URL.'?vnr=00654564&gesellschaft=abc', ['Accept' => 'application/json']);
 
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJson(
             [
-                'message' => 'No query results for model [App\\Models\\Gesellschaft].'
+                'message' => 'No query results for model [App\\Models\\Gesellschaft].',
             ]
         );
     }

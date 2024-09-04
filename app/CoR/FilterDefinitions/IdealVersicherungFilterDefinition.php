@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 class IdealVersicherungFilterDefinition implements FilterDefinitionInterface
 {
-
     protected StepFilterBuilderInterface $stepFilterBuilder;
 
     public function setStepFilterBuilder(StepFilterBuilderInterface &$stepFilterBuilder)
@@ -17,7 +16,7 @@ class IdealVersicherungFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string)Str::of($name)->snake() === 'ideal_versicherung';
+        return (string) Str::of($name)->snake() === 'ideal_versicherung';
     }
 
     public function runFilterChain(): void

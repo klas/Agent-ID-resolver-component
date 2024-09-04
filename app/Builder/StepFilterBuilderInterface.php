@@ -2,7 +2,8 @@
 
 namespace App\Builder;
 
-interface StepFilterBuilderInterface {
+interface StepFilterBuilderInterface
+{
     public function setFilterable(string $filterable): self;
 
     public function getFiltered(): ?string;
@@ -14,4 +15,4 @@ interface StepFilterBuilderInterface {
     public function filterPrefixChars(string $char): self;
 
     public function filterSuffixChars(string $char): self;
-    }
+}

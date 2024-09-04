@@ -2,8 +2,6 @@
 
 namespace App\Builder;
 
-use App\Builder\StepFilterBuilderInterface;
-
 class DemvStepFilterBuilder implements StepFilterBuilderInterface
 {
     protected ?string $filterable = null;
@@ -22,15 +20,14 @@ class DemvStepFilterBuilder implements StepFilterBuilderInterface
 
     public function filterNonAlphaNumeric(): StepFilterBuilderInterface
     {
-        $this->filterable = preg_replace("/[^A-Za-z0-9]/", '', $this->filterable);
+        $this->filterable = preg_replace('/[^A-Za-z0-9]/', '', $this->filterable);
 
         return $this;
     }
 
-
     public function filterNonNumeric(): StepFilterBuilderInterface
     {
-        $this->filterable = preg_replace("/[^0-9]/", '', $this->filterable);
+        $this->filterable = preg_replace('/[^0-9]/', '', $this->filterable);
 
         return $this;
     }
@@ -48,5 +45,4 @@ class DemvStepFilterBuilder implements StepFilterBuilderInterface
 
         return $this;
     }
-
 }

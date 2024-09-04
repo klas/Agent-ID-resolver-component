@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ShowMaklerRequest;
 use App\Strategy\VnrResolvingStrategyInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class MaklerController extends Controller
@@ -17,7 +16,7 @@ class MaklerController extends Controller
     {
         $response = $this->resolvingStrategy->resolve($request->validated())
             ?? throw new NotFoundHttpException('Makler not found', null, 400,
-                ['Content-Type' =>'application/problem+json']);
+                ['Content-Type' => 'application/problem+json']);
 
         return response()->json($response);
     }

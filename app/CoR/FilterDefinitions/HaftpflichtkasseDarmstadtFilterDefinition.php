@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 
 class HaftpflichtkasseDarmstadtFilterDefinition implements FilterDefinitionInterface
 {
-
     protected StepFilterBuilderInterface $stepFilterBuilder;
 
     public function setStepFilterBuilder(StepFilterBuilderInterface &$stepFilterBuilder)
@@ -17,7 +16,7 @@ class HaftpflichtkasseDarmstadtFilterDefinition implements FilterDefinitionInter
 
     public function responsible(string $name): bool
     {
-        return (string)Str::of($name)->snake() === 'haftpflichtkasse_darmstadt';
+        return (string) Str::of($name)->snake() === 'haftpflichtkasse_darmstadt';
     }
 
     public function runFilterChain(): void
