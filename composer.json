@@ -4,8 +4,13 @@
     "description": "The skeleton application for the Laravel framework.",
     "keywords": ["laravel", "framework"],
     "license": "MIT",
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/charles0d/fuzzywuzzy.git"
+    }],
     "require": {
         "php": "^8.2",
+        "charles0d/fuzzywuzzy": "^1.0",
         "laravel/framework": "^11.9",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9"

@@ -9,6 +9,8 @@ use App\CoR\FilterDefinitions\DieBayerischeFilterDefinition;
 use App\CoR\FilterDefinitions\HaftpflichtkasseDarmstadtFilterDefinition;
 use App\CoR\FilterDefinitions\IdealVersicherungFilterDefinition;
 use App\CoR\FilterDefinitions\WWKFilterDefinition;
+use App\Services\FuzzyInterface;
+use App\Services\FuzzyService;
 use App\Strategy\VnrFuzzyResolvingStrategy;
 use App\Strategy\VnrResolvingStrategyInterface;
 use App\Strategy\VnrStepFilteringResolvingStrategy;
@@ -17,9 +19,10 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     public $bindings = [
-        VnrResolvingStrategyInterface::class => VnrStepFilteringResolvingStrategy::class,
-        //VnrResolvingStrategyInterface::class => VnrFuzzyResolvingStrategy::class,
+        //VnrResolvingStrategyInterface::class => VnrStepFilteringResolvingStrategy::class,
+        VnrResolvingStrategyInterface::class => VnrFuzzyResolvingStrategy::class,
         StepFilterBuilderInterface::class => DemvStepFilterBuilder::class,
+        FuzzyInterface::class => FuzzyService::class,
     ];
 
     /**
