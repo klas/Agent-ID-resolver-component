@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Builder\DemvStepFilterBuilder;
+use App\Builder\IdMatcherStepFilterBuilder;
 use App\Builder\StepFilterBuilderInterface;
 use App\CoR\FilterDefinitions\AxaVersicherungFilterDefinition;
 use App\CoR\FilterDefinitions\DieBayerischeFilterDefinition;
@@ -21,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public $bindings = [
         //VnrResolvingStrategyInterface::class => VnrStepFilteringResolvingStrategy::class,
         VnrResolvingStrategyInterface::class => VnrFuzzyResolvingStrategy::class,
-        StepFilterBuilderInterface::class => DemvStepFilterBuilder::class,
+        StepFilterBuilderInterface::class => IdMatcherStepFilterBuilder::class,
         FuzzyInterface::class => FuzzyService::class,
     ];
 

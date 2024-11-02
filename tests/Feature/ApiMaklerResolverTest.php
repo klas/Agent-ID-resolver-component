@@ -3,11 +3,11 @@
 namespace Tests\Feature;
 
 use Database\Seeders\TestDataSeeder;
+use Database\Seeders\TestDataTrait;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
-use Database\Seeders\TestDataTrait;
 
 class ApiMaklerResolverTest extends TestCase
 {
@@ -18,7 +18,7 @@ class ApiMaklerResolverTest extends TestCase
     public function testShowReturnsValidData()
     {
         $maklers = self::MAKLERS;
-        $gesellschaftsVnrs= self::GESELSCHAFTS;
+        $gesellschaftsVnrs = self::GESELSCHAFTS;
 
         for ($x = 0; $x < self::COLUMN_COUNT; $x++) {
             Artisan::call('migrate:refresh');

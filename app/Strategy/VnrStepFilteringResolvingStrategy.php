@@ -11,19 +11,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
 {
+
+    use VnrResolvingStrategyHelper;
+
     public function __construct(protected StepFilterBuilderInterface $stepFilterBuilder) {}
 
     public function resolve(array $data = []): ?MaklerDTO
     {
-        $gesellschaft = Gesellschaft::whereName($data['gesellschaft'])->with('maklers')->firstOrFail();
-
         // Try to match with stored aliases
-        $searchableAliases = collect([]);
-
-        $gesellschaft->maklers->each(function ($makler) use (&$searchableAliases) {
-            $searchableAliases = $searchableAliases->merge($makler->pivot->vnraliases);
-        });
-
+        $searchableAliases = $this->getSearchableAliases($data['gesellschaft']);
         $makler = $searchableAliases->whereStrict('name', $data['vnr'])->first()?->gesellschafts_makler->makler;
 
         // No 100% match, try matching filtered value

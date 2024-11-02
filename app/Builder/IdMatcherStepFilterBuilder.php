@@ -2,7 +2,7 @@
 
 namespace App\Builder;
 
-class DemvStepFilterBuilder implements StepFilterBuilderInterface
+class IdMatcherStepFilterBuilder implements StepFilterBuilderInterface
 {
     protected ?string $filterable = null;
 

@@ -2,6 +2,7 @@
 
 namespace App\Strategy;
 
+use App\Builder\StepFilterBuilderInterface;
 use App\DTO\MaklerDTO;
 use App\Models\Gesellschaft;
 use App\Models\Vnralias;
@@ -11,76 +12,81 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
 {
     protected const EXPECTED_VNR_LENGTH = 6;
 
-    public function __construct(protected FuzzyInterface $fuzzy) {}
+    use VnrResolvingStrategyHelper;
+
+    public function __construct(protected StepFilterBuilderInterface $stepFilterBuilder, protected FuzzyInterface $fuzzy) {}
 
     public function resolve(array $data = []): ?MaklerDTO
     {
-        $gesellschaft = Gesellschaft::whereName($data['gesellschaft'])->with('maklers')->firstOrFail();
-
         // Try to match with stored aliases
-        $searchableAliases = collect([]);
-
-        $gesellschaft->maklers->each(function ($makler) use (&$searchableAliases) {
-            $searchableAliases = $searchableAliases->merge($makler->pivot->vnraliases);
-        });
+        $searchableAliases = $this->getSearchableAliases($data['gesellschaft']);
+        $makler = $searchableAliases->whereStrict('name', $data['vnr'])->first()?->gesellschafts_makler->makler;
 
         $debug = [];
 
-        $searchableAliases->each(function ($alias) use (&$makler, $data, &$debug) {
+        if (! $makler) {
+            $searchableAliases->each(function ($alias) use (&$makler, $data, &$debug) {
 
+                // First remove obvious noise
 
+                // $var1 = $this->stepFilterBuilder->setFilterable($alias->name)->filterNonAlphaNumeric()->getFiltered();
+                // $var2 = $this->stepFilterBuilder->setFilterable($data['vnr'])->filterNonAlphaNumeric()->getFiltered();
 
-            $var1Len = strlen($alias->name);
-            $var2Len = strlen($data['vnr']);
+                $var1 = $alias->name;
+                $var2 = $data['vnr'];
 
-            if ($var1Len < $var2Len) {
-                $shorterVarLen = $var1Len;
-                $shorterVar = $alias->name;
-                $longerVarLen = $var2Len;
-                $longerVar = $data['vnr'];
-            } else {
-                $shorterVarLen = $var2Len;
-                $shorterVar = $data['vnr'];
-                $longerVarLen = $var1Len;
-                $longerVar = $alias->name;
-            }
+                $var1Len = strlen($var1);
+                $var2Len = strlen($var2);
 
-            //try fuzzy match
-            $levScore = $this->fuzzy->levenshtein($shorterVar, $longerVar);
-            $levScore2 = $this->fuzzy->levenshtein($longerVar, $shorterVar);
+                if ($var1Len < $var2Len) {
+                    $shorterVarLen = $var1Len;
+                    $shorterVar = $var1;
+                    $longerVarLen = $var2Len;
+                    $longerVar = $var2;
+                } else {
+                    $shorterVarLen = $var2Len;
+                    $shorterVar = $var2;
+                    $longerVarLen = $var1Len;
+                    $longerVar = $var1;
+                }
 
-            $similarityScore = $this->fuzzy->textSimilarity($shorterVar, $longerVar, $percent);
+                //Now try to fuzzy match
+                $levScore = $this->fuzzy->levenshtein($shorterVar, $longerVar);
+                $similarityScore = $this->fuzzy->textSimilarity($shorterVar, $longerVar, $percent);
+                $fuzzy = $this->fuzzy->fuzzyWuzzy($shorterVar, $longerVar);
+                $diff = $this->differentChars($shorterVar, $longerVar);
+                $differenceChars = $shorterVarLen - self::EXPECTED_VNR_LENGTH;
+                //$match = $similarityScore >= $shorterVarLen && $similarityScore >= self::EXPECTED_VNR_LENGTH;
+                //$match = $similarityScore >= ($shorterVarLen - $this->delete_operations_score($shorterVar, $longerVar)) && $similarityScore >= self::EXPECTED_VNR_LENGTH;
+                //$match = ($similarityScore - $differenceChars) >= $shorterVarLen && $similarityScore >= self::EXPECTED_VNR_LENGTH;
+                //
+                //$match = $similarityScore - $shorterVarLen - $this->delete_operations_score($shorterVar, $longerVar)) && $similarityScore >= self::EXPECTED_VNR_LENGTH;
 
-            $differenceChars = $shorterVarLen - self::EXPECTED_VNR_LENGTH;
-            //$match = $similarityScore >= $shorterVarLen && $similarityScore >= self::EXPECTED_VNR_LENGTH;
-            //$match = $similarityScore >= ($shorterVarLen - $this->delete_operations_score($shorterVar, $longerVar)) && $similarityScore >= self::EXPECTED_VNR_LENGTH;
-            $match = ($similarityScore - $differenceChars) >= $shorterVarLen && $similarityScore >= self::EXPECTED_VNR_LENGTH;
-            //
+                $match = $fuzzy >= 90 && ! preg_match('~[1-9]+~', $diff);
 
-            //$match = $similarityScore - $shorterVarLen - $this->delete_operations_score($shorterVar, $longerVar)) && $similarityScore >= self::EXPECTED_VNR_LENGTH;
+                $debug[] = [[$alias->name, $data['vnr']],
+                    'lev score' => $levScore,
+                    'similarity score' => [$similarityScore, $percent],
+                    //'intersection' => $this->intersection($alias->name, $data['vnr']),
+                    'lenghts' => [$shorterVarLen, $longerVarLen],
+                    'delete score both sides' => $this->fuzzy->deleteOperationsScoreBothSides($shorterVar, $longerVar),
+                    'delete score' => [$this->delete_operations_score($shorterVar, $longerVar), $this->delete_operations_score($longerVar, $shorterVar)],
+                    'fuzzy' => $this->fuzzy->fuzzyWuzzy($shorterVar, $longerVar),
+                    'diff' => $this->differentChars($shorterVar, $longerVar),
+                    'match' => $match,
+                ];
 
-            $debug[] = [[$alias->name, $data['vnr']],
-                'lev score' => [$levScore, $levScore2],
-                'similarity score' => [$similarityScore, $percent],
-                //'intersection' => $this->intersection($alias->name, $data['vnr']),
-                'lenghts' => [$shorterVarLen, $longerVarLen],
-                'delete score both sides' => $this->fuzzy->deleteOperationsScoreBothSides($shorterVar, $longerVar),
-                /*'delete score' => [$this->delete_operations_score($shorterVar, $longerVar),
-                    $this->delete_operations_score($longerVar, $shorterVar)],*/
-                //$this->matchingCharactersScore($alias->name, $data['vnr']),
-                'fuzzy' => $this->fuzzy->fuzzyWuzzy($shorterVar, $longerVar),
-                'match' => $match,
-            ];
+                if ($match) {
+                    $makler = $alias?->gesellschafts_makler->makler;
+                    Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
 
-            if (false && $matchScore <= 100) {
-                $makler = $alias?->gesellschafts_makler->makler;
-                Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
+                    return false; // break loop
+                }
 
-                return false; // break loop
-            }
+                //dump($debug);
+            });
 
-            dump($debug);
-        });
+        }
 
         if ($makler) {
             return new MaklerDTO($makler->name);
@@ -101,6 +107,14 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
                     [$string1, $string2])
             )
         );
+    }
+
+    public function differentChars(string $string1, string $string2): string
+    {
+        $arr1 = str_split($string1);
+        $arr2 = str_split($string2);
+
+        return implode('', array_merge(array_diff($arr1, $arr2), array_diff($arr2, $arr1)));
     }
 
     public function delete_operations_score($source, $target)
@@ -137,5 +151,4 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
         // The score will be the minimum number of deletions required to match.
         return $dp[$sourceLen][$targetLen];
     }
-
 }
