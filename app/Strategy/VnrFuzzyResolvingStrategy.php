@@ -4,7 +4,6 @@ namespace App\Strategy;
 
 use App\Builder\StepFilterBuilderInterface;
 use App\DTO\MaklerDTO;
-use App\Models\Gesellschaft;
 use App\Models\Vnralias;
 use App\Services\FuzzyInterface;
 
@@ -19,13 +18,13 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
     public function resolve(array $data = []): ?MaklerDTO
     {
         // Try to match with stored aliases
-        $searchableAliases = $this->getSearchableAliases($data['gesellschaft']);
-        $makler = $searchableAliases->whereStrict('name', $data['vnr'])->first()?->gesellschafts_makler->makler;
-
+        $makler = $this->getMaklerPerExactVnr($data['gesellschaft'], $data['vnr']);
         $debug = [];
 
         if (! $makler) {
-            $searchableAliases->each(function ($alias) use (&$makler, $data, &$debug) {
+            $searchableVnrAliases = $this->getSearchableVnrAliases($data['gesellschaft']);
+
+            $searchableVnrAliases->each(function ($alias) use (&$makler, $data, &$debug) {
 
                 // First remove obvious noise
 

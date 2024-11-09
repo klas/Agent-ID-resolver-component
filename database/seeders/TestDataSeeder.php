@@ -17,7 +17,7 @@ class TestDataSeeder extends Seeder
 
         $maklers = [];
 
-        foreach ($maklersData AS $key => $maklerName)  {
+        foreach ($maklersData as $key => $maklerName) {
             $maklers[$key] = Makler::create(['name' => $maklerName]);
         }
 
@@ -35,8 +35,8 @@ class TestDataSeeder extends Seeder
                 $makler = $ges->maklers->firstWhere('name', '==', $maklers[$key]->name);
 
                 //Reduce data to specified column for variations
-                if($dataColumn) {
-                   $vnrs = [$vnrs[$dataColumn]];
+                if ($dataColumn) {
+                    $vnrs = [$vnrs[$dataColumn]];
                 }
 
                 foreach ($vnrs as $vnr) {

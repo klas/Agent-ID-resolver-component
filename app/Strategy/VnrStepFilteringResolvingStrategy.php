@@ -19,11 +19,11 @@ class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
     public function resolve(array $data = []): ?MaklerDTO
     {
         // Try to match with stored aliases
-        $searchableAliases = $this->getSearchableAliases($data['gesellschaft']);
-        $makler = $searchableAliases->whereStrict('name', $data['vnr'])->first()?->gesellschafts_makler->makler;
+        $makler = $this->getMaklerPerExactVnr($data['gesellschaft'], $data['vnr']);
 
         // No 100% match, try matching filtered value
         if (! $makler) {
+            $searchableAliases = $this->getSearchableVnrAliases($data['gesellschaft']);
             $filteredVnr = $this->filterVnr($data['vnr'], $data['gesellschaft']);
             $alias = $searchableAliases->whereStrict('name', $filteredVnr)->first();
             if ($makler = $alias?->gesellschafts_makler->makler) {
