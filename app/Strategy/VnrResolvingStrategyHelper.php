@@ -24,6 +24,6 @@ trait VnrResolvingStrategyHelper
 
     protected function getMaklerPerExactVnr(string $gesellschaft, string $vnr): ?Makler
     {
-        return Vnralias::where('name', '==', $vnr)->first()->gesellschafts_makler->makler;
+        return Vnralias::where('name', '==', $vnr)->first()?->gesellschafts_makler->makler;
     }
 }
