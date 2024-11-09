@@ -28,7 +28,7 @@ class ApiMaklerResolverTest extends TestCase
                 foreach ($maklerVnrs as $gesellschaft => $vnrs) {
                     foreach ($vnrs as $vnr) {
                         $response = $this->getJson(self::BASIC_URL."?vnr=$vnr&gesellschaft=$gesellschaft");
-                        //dump([$x, $vnr, $gesellschaft,$maklers[$key]]);
+                        dump([$x, $vnr, $gesellschaft,$maklers[$key]]);
                         $response->assertStatus(Response::HTTP_OK);
                         $response->assertJson(
                             [
