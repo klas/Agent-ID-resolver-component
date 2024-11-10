@@ -19,6 +19,7 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
     {
         // Try to match with stored aliases
         $makler = $this->getMaklerPerExactVnr($data['gesellschaft'], $data['vnr']);
+
         $debug = [];
 
         if (! $makler) {
@@ -28,11 +29,11 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
 
                 // First remove obvious noise
 
-                // $var1 = $this->stepFilterBuilder->setFilterable($alias->name)->filterNonAlphaNumeric()->getFiltered();
-                // $var2 = $this->stepFilterBuilder->setFilterable($data['vnr'])->filterNonAlphaNumeric()->getFiltered();
+                $var1 = $this->stepFilterBuilder->setFilterable($alias->name)->filterPrefixChars('9')->filterNonAlphaNumeric()->getFiltered();
+                $var2 = $this->stepFilterBuilder->setFilterable($data['vnr'])->filterPrefixChars('9')->filterNonAlphaNumeric()->getFiltered();
 
-                $var1 = $alias->name;
-                $var2 = $data['vnr'];
+                //$var1 = $alias->name;
+                //$var2 = $data['vnr'];
 
                 $var1Len = strlen($var1);
                 $var2Len = strlen($var2);
@@ -53,40 +54,39 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
                 $levScore = $this->fuzzy->levenshtein($shorterVar, $longerVar);
                 $similarityScore = $this->fuzzy->textSimilarity($shorterVar, $longerVar, $percent);
                 $fuzzy = $this->fuzzy->fuzzyWuzzy($shorterVar, $longerVar);
-                $diff = $this->differentChars($shorterVar, $longerVar);
-                $differenceChars = $shorterVarLen - self::EXPECTED_VNR_LENGTH;
-                //$match = $similarityScore >= $shorterVarLen && $similarityScore >= self::EXPECTED_VNR_LENGTH;
-                //$match = $similarityScore >= ($shorterVarLen - $this->delete_operations_score($shorterVar, $longerVar)) && $similarityScore >= self::EXPECTED_VNR_LENGTH;
-                //$match = ($similarityScore - $differenceChars) >= $shorterVarLen && $similarityScore >= self::EXPECTED_VNR_LENGTH;
-                //
-                //$match = $similarityScore - $shorterVarLen - $this->delete_operations_score($shorterVar, $longerVar)) && $similarityScore >= self::EXPECTED_VNR_LENGTH;
-
-                $match = $fuzzy >= 90 && ! preg_match('~[1-9]+~', $diff);
-
-                $debug[] = [[$alias->name, $data['vnr']],
+                $diff = $this->stringDiff($shorterVar, $longerVar);
+                $match = $fuzzy == 100 || ($fuzzy >= 87 && ! preg_match('~[1-9]+~', $diff));
+                $debug[] = [
+                    [$shorterVar, $longerVar],
+                    'alias' => $alias->name,
                     'lev score' => $levScore,
                     'similarity score' => [$similarityScore, $percent],
                     //'intersection' => $this->intersection($alias->name, $data['vnr']),
-                    'lenghts' => [$shorterVarLen, $longerVarLen],
-                    'delete score both sides' => $this->fuzzy->deleteOperationsScoreBothSides($shorterVar, $longerVar),
-                    'delete score' => [$this->delete_operations_score($shorterVar, $longerVar), $this->delete_operations_score($longerVar, $shorterVar)],
+                    //'lenghts' => [$shorterVarLen, $longerVarLen],
+                    //'delete score both sides' => $this->fuzzy->deleteOperationsScoreBothSides($shorterVar, $longerVar),
+                    //'delete score' => [$this->delete_operations_score($shorterVar, $longerVar), $this->delete_operations_score($longerVar, $shorterVar)],
                     'fuzzy' => $this->fuzzy->fuzzyWuzzy($shorterVar, $longerVar),
-                    'diff' => $this->differentChars($shorterVar, $longerVar),
+                    'diff' => $diff,
                     'match' => $match,
                 ];
-
+                dump($debug);
                 if ($match) {
                     $makler = $alias?->gesellschafts_makler->makler;
-                    Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
+                    //Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
+
+
 
                     return false; // break loop
                 }
 
-                //dump($debug);
             });
 
         }
+        $debug[] = [
+            [$data['gesellschaft'], $data['vnr'], $makler?->name],
+        ];
 
+        dump($debug);
         if ($makler) {
             return new MaklerDTO($makler->name);
         }
@@ -114,6 +114,26 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
         $arr2 = str_split($string2);
 
         return implode('', array_merge(array_diff($arr1, $arr2), array_diff($arr2, $arr1)));
+    }
+
+    public function string_diff_old($str1, $str2)
+    {
+        $diff = '';
+        $len1 = strlen($str1);
+        $len2 = strlen($str2);
+        $maxLen = max($len1, $len2);
+
+        for ($i = 0; $i < $maxLen; $i++) {
+            if ($i >= $len1) {
+                $diff .= $str2[$i];
+            } elseif ($i >= $len2) {
+                $diff .= $str1[$i];
+            } elseif ($str1[$i] !== $str2[$i]) {
+                $diff .= $str2[$i];
+            }
+        }
+
+        return $diff;
     }
 
     public function delete_operations_score($source, $target)
@@ -149,5 +169,50 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
 
         // The score will be the minimum number of deletions required to match.
         return $dp[$sourceLen][$targetLen];
+    }
+
+    public function stringDiff($str1, $str2)
+    {
+        $ret = '';
+
+        $diff = $this->calculateDiff(str_split($str1), str_split($str2));
+
+        foreach ($diff as $k) {
+            if (is_array($k)) {
+                $ret .= (! empty($k['d']) ? implode('', $k['d']) : '').
+                    (! empty($k['i']) ? implode('', $k['i']) : '');
+            }
+        }
+
+        return $ret;
+
+    }
+
+    protected function calculateDiff($old, $new)
+    {
+        $matrix = [];
+        $maxlen = 0;
+
+        foreach ($old as $oindex => $ovalue) {
+            $nkeys = array_keys($new, $ovalue);
+            foreach ($nkeys as $nindex) {
+                $matrix[$oindex][$nindex] = isset($matrix[$oindex - 1][$nindex - 1]) ?
+                    $matrix[$oindex - 1][$nindex - 1] + 1 : 1;
+                if ($matrix[$oindex][$nindex] > $maxlen) {
+                    $maxlen = $matrix[$oindex][$nindex];
+                    $omax = $oindex + 1 - $maxlen;
+                    $nmax = $nindex + 1 - $maxlen;
+                }
+            }
+        }
+
+        if ($maxlen == 0) {
+            return [['d' => $old, 'i' => $new]];
+        }
+
+        return array_merge(
+            $this->calculateDiff(array_slice($old, 0, $omax), array_slice($new, 0, $nmax)),
+            array_slice($new, $nmax, $maxlen),
+            $this->calculateDiff(array_slice($old, $omax + $maxlen), array_slice($new, $nmax + $maxlen)));
     }
 }

@@ -7,6 +7,7 @@ use App\Models\GesellschaftsMakler;
 use App\Models\Makler;
 use App\Models\Vnralias;
 use Illuminate\Support\Collection;
+use function Psy\debug;
 
 trait VnrResolvingStrategyHelper
 {
@@ -24,6 +25,6 @@ trait VnrResolvingStrategyHelper
 
     protected function getMaklerPerExactVnr(string $gesellschaft, string $vnr): ?Makler
     {
-        return Vnralias::where('name', '==', $vnr)->first()?->gesellschafts_makler->makler;
+        return Vnralias::where('name', '=', $vnr)->with('gesellschafts_makler')->first()?->gesellschafts_makler->makler;
     }
 }
