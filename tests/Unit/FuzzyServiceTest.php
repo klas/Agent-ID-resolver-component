@@ -43,5 +43,7 @@ class FuzzyServiceTest extends TestCase
         $this->assertEquals('dogcat', $this->fuzzyService->stringDiff('dog', 'cat'));
         $this->assertEquals('', $this->fuzzyService->stringDiff('dog', 'dog'));
         $this->assertEquals('ou', $this->fuzzyService->stringDiff('dog', 'dug'));
+        $this->assertEquals('Q87', $this->fuzzyService->stringDiff('412548787', 'Q412548777'));
+        $this->assertEquals('Q', $this->fuzzyService->stringDiff('412548777', 'Q412548777'));
     }
 }
