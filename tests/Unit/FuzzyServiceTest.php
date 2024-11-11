@@ -37,4 +37,11 @@ class FuzzyServiceTest extends TestCase
         $this->assertEquals(6, $this->fuzzyService->deleteOperationsScoreBothSides('dog', 'cat'));
         $this->assertEquals(2, $this->fuzzyService->deleteOperationsScoreBothSides('dog', 'doggy'));
     }
+
+    public function testStringDiff()
+    {
+        $this->assertEquals('dogcat', $this->fuzzyService->stringDiff('dog', 'cat'));
+        $this->assertEquals('', $this->fuzzyService->stringDiff('dog', 'dog'));
+        $this->assertEquals('ou', $this->fuzzyService->stringDiff('dog', 'dug'));
+    }
 }

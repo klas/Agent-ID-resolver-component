@@ -15,5 +15,5 @@ class VnrFuzzyResolvingStrategyTest extends TestCase
     {
         $this->strategy = new VnrFuzzyResolvingStrategy(new IdMatcherStepFilterBuilder, new FuzzyService);
     }
-    
+
 }

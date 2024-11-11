@@ -12,4 +12,6 @@ interface FuzzyInterface
 
     public function deleteOperationsScoreBothSides($source, $target): int;
 
+    public function stringDiff($str1, $str2): string;
+
 }
