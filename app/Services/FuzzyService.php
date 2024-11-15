@@ -75,6 +75,7 @@ class FuzzyService implements FuzzyInterface
 
     }
 
+    // Adapted from https://github.com/paulgb/simplediff/
     protected function calculateDiff($old, $new)
     {
         $matrix = [];

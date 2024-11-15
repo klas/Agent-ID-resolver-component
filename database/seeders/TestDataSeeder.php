@@ -10,7 +10,7 @@ class TestDataSeeder extends Seeder
 {
     use TestDataTrait;
 
-    public function run(?int $dataColumn = 2): void
+    public function run(?int $dataColumn = null): void
     {
         $maklersData = self::MAKLERS;
         $gesellschaftsVnrs = self::GESELSCHAFTS;
