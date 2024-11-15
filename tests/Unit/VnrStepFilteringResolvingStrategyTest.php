@@ -50,14 +50,9 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
 
     public function testResolveFilteredMatch()
     {
-        $this->app->tag(
-            [
-                TestFilterDefinition::class,
-            ],
-            'filter_definition');
+        $this->addTestFilterDefinition();
 
-
-        $data = ['gesellschaft' => 'Test Gesellschaft', 'vnr' => '12345'];
+        $data = ['gesellschaft' => 'Test Gesellschaft', 'vnr' => '12345x'];
         $makler = Makler::create(['name' => 'Test Makler']);
         $gesellschaft = Gesellschaft::create(['name' => 'Test Gesellschaft']);
         $gesellschaft->maklers()->attach($makler);
@@ -65,14 +60,14 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
         $gesellschaft->refresh();
 
         $makler = $gesellschaft->maklers->firstWhere('id', '==', $makler->id);
-        $vnralias = Vnralias::create(['name' => '12345x', 'gm_id' => $makler->pivot->id]);
+        $vnralias = Vnralias::create(['name' => '12345', 'gm_id' => $makler->pivot->id]);
 
-        /*$this->stepFilterBuilderMock->expects($this->once())
+        $this->stepFilterBuilderMock->expects($this->atLeastOnce())
             ->method('setFilterable')
-            ->with('12345');
-        $this->stepFilterBuilderMock->expects($this->once())
+            ->with('12345x');
+        $this->stepFilterBuilderMock->expects($this->atLeastOnce())
             ->method('getFiltered')
-            ->willReturn('12345');*/
+            ->willReturn('12345');
 
         $result = $this->strategy->resolve($data);
         $this->assertInstanceOf(MaklerDTO::class, $result);
@@ -81,6 +76,8 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
 
     public function testResolveNoMatch()
     {
+        $this->addTestFilterDefinition();
+
         $data = ['gesellschaft' => 'Test Gesellschaft', 'vnr' => '12345'];
 
         $this->stepFilterBuilderMock->expects($this->once())
@@ -104,7 +101,9 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
 
     public function testFilterVnr()
     {
-        $filterable = '12345';
+        $this->addTestFilterDefinition();
+
+        $filterable = '12345x';
         $gesellschaft = 'Test Gesellschaft';
 
         $this->stepFilterBuilderMock->expects($this->once())
@@ -131,7 +130,7 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
             ->getMock();
 
         // Stub `getMaklerPerExactVnr` to return a mock "Makler" object with a name
-        $strategy->method('getMaklerPerExactVnr')->willReturn((object) ['name' => 'MaklerName']);
+        $strategy->method('getMaklerPerExactVnr')->willReturn(new Makler(['name' => 'MaklerName']));
 
         $data = ['gesellschaft' => 'some_gesellschaft', 'vnr' => 'some_vnr'];
 
@@ -156,6 +155,7 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
         $mockAlias = (object) [
             'name' => 'filtered_vnr',
             'gesellschafts_makler' => (object) ['makler' => (object) ['name' => 'MaklerFromAlias']],
+            'gm_id' => 1,
         ];
         $strategy->method('getSearchableVnrAliases')->willReturn(collect([$mockAlias]));
 
@@ -213,5 +213,14 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
         $result = $strategy->resolve($data);
 
         $this->assertNull($result);
+    }
+
+    protected function addTestFilterDefinition(): void
+    {
+        $this->app->tag(
+            [
+                TestFilterDefinition::class,
+            ],
+            'filter_definition');
     }
 }

@@ -54,7 +54,7 @@ class ApiMaklerResolverTest extends TestCase
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJson(
             [
-                'message' => 'No query results for model [App\\Models\\Gesellschaft].',
+                'message' => 'Makler not found',
             ]
         );
     }

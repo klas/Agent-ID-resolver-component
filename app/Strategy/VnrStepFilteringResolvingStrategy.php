@@ -4,20 +4,24 @@ namespace App\Strategy;
 
 use App\Builder\StepFilterBuilderInterface;
 use App\DTO\MaklerDTO;
-use App\Models\Gesellschaft;
 use App\Models\Vnralias;
+
 use Illuminate\Support\Facades\App;
+use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
 {
-
     use VnrResolvingStrategyHelper;
 
     public function __construct(protected StepFilterBuilderInterface $stepFilterBuilder) {}
 
     public function resolve(array $data = []): ?MaklerDTO
     {
+        if (! isset($data['gesellschaft']) || ! isset($data['vnr'])) {
+            throw new InvalidArgumentException;
+        }
+
         // Try to match with stored aliases
         $makler = $this->getMaklerPerExactVnr($data['gesellschaft'], $data['vnr']);
 

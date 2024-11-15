@@ -13,10 +13,10 @@ trait VnrResolvingStrategyHelper
 {
     protected function getSearchableVnrAliases(string $gesellschaft): Collection
     {
-        $gesellschaft = Gesellschaft::whereName($gesellschaft)->with('maklers')->firstOrFail();
+        $gesellschaft = Gesellschaft::whereName($gesellschaft)->with('maklers')->first();
         $searchableAliases = collect([]);
 
-        $gesellschaft->maklers->each(function ($makler) use (&$searchableAliases) {
+        $gesellschaft?->maklers->each(function ($makler) use (&$searchableAliases) {
             $searchableAliases = $searchableAliases->merge($makler->pivot->vnraliases);
         });
 

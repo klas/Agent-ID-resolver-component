@@ -6,6 +6,7 @@ use App\Builder\StepFilterBuilderInterface;
 use App\DTO\MaklerDTO;
 use App\Models\Vnralias;
 use App\Services\FuzzyInterface;
+use InvalidArgumentException;
 
 class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
 {
@@ -16,6 +17,10 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
 
     public function resolve(array $data = []): ?MaklerDTO
     {
+        if (! isset($data['gesellschaft']) || ! isset($data['vnr'])) {
+            throw new InvalidArgumentException;
+        }
+
         // Try to match with stored aliases
         $makler = $this->getMaklerPerExactVnr($data['gesellschaft'], $data['vnr']);
 
