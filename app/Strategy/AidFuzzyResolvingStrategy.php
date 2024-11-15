@@ -3,37 +3,37 @@
 namespace App\Strategy;
 
 use App\Builder\StepFilterBuilderInterface;
-use App\DTO\MaklerDTO;
-use App\Models\Vnralias;
+use App\DTO\AgentDTO;
+use App\Models\Aidalias;
 use App\Services\FuzzyInterface;
 use InvalidArgumentException;
 
-class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
+class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
 {
 
-    use VnrResolvingStrategyHelper;
+    use AidResolvingStrategyHelper;
 
     public function __construct(protected StepFilterBuilderInterface $stepFilterBuilder, protected FuzzyInterface $fuzzy) {}
 
-    public function resolve(array $data = []): ?MaklerDTO
+    public function resolve(array $data = []): ?AgentDTO
     {
-        if (! isset($data['gesellschaft']) || ! isset($data['vnr'])) {
+        if (! isset($data['gesellschaft']) || ! isset($data['aid'])) {
             throw new InvalidArgumentException;
         }
 
         // Try to match with stored aliases
-        $makler = $this->getMaklerPerExactVnr($data['gesellschaft'], $data['vnr']);
+        $agent = $this->getAgentPerExactAid($data['gesellschaft'], $data['aid']);
 
         $debug = [];
 
-        if (! $makler) {
-            $searchableVnrAliases = $this->getSearchableVnrAliases($data['gesellschaft']);
+        if (! $agent) {
+            $searchableAidAliases = $this->getSearchableAidAliases($data['gesellschaft']);
 
-            $searchableVnrAliases->each(function ($alias) use (&$makler, $data, &$debug) {
+            $searchableAidAliases->each(function ($alias) use (&$agent, $data, &$debug) {
 
                 // First remove obvious noise
                 $var1 = $this->stepFilterBuilder->setFilterable($alias->name)->filterPrefixChars('9')->filterNonAlphaNumeric()->getFiltered();
-                $var2 = $this->stepFilterBuilder->setFilterable($data['vnr'])->filterPrefixChars('9')->filterNonAlphaNumeric()->getFiltered();
+                $var2 = $this->stepFilterBuilder->setFilterable($data['aid'])->filterPrefixChars('9')->filterNonAlphaNumeric()->getFiltered();
 
                 $var1Len = strlen($var1);
                 $var2Len = strlen($var2);
@@ -65,10 +65,10 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
                 dump($debug);*/
 
                 if ($match) {
-                    $makler = $alias?->gesellschafts_makler->makler;
+                    $agent = $alias?->gesellschafts_agent->agent;
 
                     // Store alias
-                    Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
+                    Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
 
                     return false; // break loop
                 }
@@ -78,13 +78,13 @@ class VnrFuzzyResolvingStrategy implements VnrResolvingStrategyInterface
         }
 
         /*$debug[] = [
-            [$data['gesellschaft'], $data['vnr'], $makler?->name],
+            [$data['gesellschaft'], $data['aid'], $agent?->name],
         ];
 
         dump($debug);*/
 
-        if ($makler) {
-            return new MaklerDTO($makler->name);
+        if ($agent) {
+            return new AgentDTO($agent->name);
         }
 
         return null;

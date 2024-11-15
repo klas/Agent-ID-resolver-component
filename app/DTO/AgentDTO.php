@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-class MaklerDTO
+class AgentDTO
 {
     public function __construct(public string $name) {}
 }

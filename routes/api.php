@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Api\MaklerController;
+use App\Http\Controllers\Api\AgentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -8,4 +8,4 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::get('makler', [MaklerController::class, 'show']);
+Route::get('agent', [AgentController::class, 'show']);

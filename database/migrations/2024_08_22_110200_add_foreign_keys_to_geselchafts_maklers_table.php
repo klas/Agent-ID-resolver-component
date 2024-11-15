@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('gesellschafts_maklers', function (Blueprint $table) {
+        Schema::table('gesellschafts_agents', function (Blueprint $table) {
             $table->foreign(['gesellschaft_id'], 'gesellschaft_fk')->references(['id'])
                 ->on('gesellschafts')->onUpdate('CASCADE')->onDelete('CASCADE');
-            $table->foreign(['makler_id'], 'makler_fk')->references(['id'])
-                ->on('maklers')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign(['agent_id'], 'agent_fk')->references(['id'])
+                ->on('agents')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 
@@ -28,9 +28,9 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('gesellschafts_maklers', function (Blueprint $table) {
+        Schema::table('gesellschafts_agents', function (Blueprint $table) {
             $table->dropForeign('gesellschaft_fk');
-            $table->dropForeign('makler_fk');
+            $table->dropForeign('agent_fk');
         });
     }
 };

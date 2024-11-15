@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Gesellschaft;
-use App\Models\Makler;
+use App\Models\Agent;
 use Illuminate\Database\Seeder;
 
 class TestDataSeeder extends Seeder
@@ -12,35 +12,35 @@ class TestDataSeeder extends Seeder
 
     public function run(?int $dataColumn = null): void
     {
-        $maklersData = self::MAKLERS;
-        $gesellschaftsVnrs = self::GESELSCHAFTS;
+        $agentsData = self::AGENTS;
+        $gesellschaftsAids = self::GESELSCHAFTS;
 
-        $maklers = [];
+        $agents = [];
 
-        foreach ($maklersData as $key => $maklerName) {
-            $maklers[$key] = Makler::create(['name' => $maklerName]);
+        foreach ($agentsData as $key => $agentName) {
+            $agents[$key] = Agent::create(['name' => $agentName]);
         }
 
-        foreach ($gesellschaftsVnrs as $key => $maklerVnrs) {
-            foreach ($maklerVnrs as $gesellschaft => $vnrs) {
+        foreach ($gesellschaftsAids as $key => $agentAids) {
+            foreach ($agentAids as $gesellschaft => $aids) {
                 $ges = Gesellschaft::firstOrCreate(
                     ['name' => $gesellschaft]
                 );
 
-                $ges->maklers()->attach($maklers[$key]);
+                $ges->agents()->attach($agents[$key]);
                 $ges->save();
                 $ges->refresh();
 
-                // Need to get it this way, pivot is empty in the original makler
-                $makler = $ges->maklers->firstWhere('name', '==', $maklers[$key]->name);
+                // Need to get it this way, pivot is empty in the original agent
+                $agent = $ges->agents->firstWhere('name', '==', $agents[$key]->name);
 
                 //Reduce data to specified column for variations
                 if ($dataColumn) {
-                    $vnrs = [$vnrs[$dataColumn]];
+                    $aids = [$aids[$dataColumn]];
                 }
 
-                foreach ($vnrs as $vnr) {
-                    $makler->pivot->vnraliases()->create(['name' => $vnr, 'gm_id' => $makler->pivot->id]);
+                foreach ($aids as $aid) {
+                    $agent->pivot->aidaliases()->create(['name' => $aid, 'gm_id' => $agent->pivot->id]);
                 }
             }
         }

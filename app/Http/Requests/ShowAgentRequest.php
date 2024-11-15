@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ShowMaklerRequest extends FormRequest
+class ShowAgentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,7 +22,7 @@ class ShowMaklerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'vnr' => ['required', 'string'],
+            'aid' => ['required', 'string'],
             'gesellschaft' => ['required', 'string'],
         ];
     }

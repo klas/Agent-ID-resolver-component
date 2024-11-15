@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 trait TestDataTrait
 {
-    public const MAKLERS = [
+    public const AGENTS = [
         'max' => 'Max Mustermann',
         'not_max' => 'Not Max',
     ];

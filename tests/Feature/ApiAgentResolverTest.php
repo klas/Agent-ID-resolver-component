@@ -9,34 +9,34 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
-class ApiMaklerResolverTest extends TestCase
+class ApiAgentResolverTest extends TestCase
 {
-    private const BASIC_URL = 'http://localhost/api/makler';
+    private const BASIC_URL = 'http://localhost/api/agent';
 
     use TestDataTrait;
 
     public function testShowReturnsValidData()
     {
-        $maklers = self::MAKLERS;
-        $gesellschaftsVnrs = self::GESELSCHAFTS;
+        $agents = self::AGENTS;
+        $gesellschaftsAids = self::GESELSCHAFTS;
 
         for ($x = 0; $x < self::COLUMN_COUNT; $x++) {
             Artisan::call('migrate:fresh');
             App::make(TestDataSeeder::class)->run($x);
 
-            foreach ($gesellschaftsVnrs as $key => $maklerVnrs) {
-                foreach ($maklerVnrs as $gesellschaft => $vnrs) {
-                    foreach ($vnrs as $vnr) {
-                        $response = $this->getJson(self::BASIC_URL."?vnr=$vnr&gesellschaft=$gesellschaft");
+            foreach ($gesellschaftsAids as $key => $agentAids) {
+                foreach ($agentAids as $gesellschaft => $aids) {
+                    foreach ($aids as $aid) {
+                        $response = $this->getJson(self::BASIC_URL."?aid=$aid&gesellschaft=$gesellschaft");
                         //dump($x);
                         //$response->baseRequest->dump();
                         //$response->dump();
-                        //dump($maklers[$key]);
+                        //dump($agents[$key]);
 
                         $response->assertStatus(Response::HTTP_OK);
                         $response->assertJson(
                             [
-                                'name' => $maklers[$key],
+                                'name' => $agents[$key],
                             ]
                         );
 
@@ -49,12 +49,12 @@ class ApiMaklerResolverTest extends TestCase
 
     public function testShowReturnsErrorOnInvalidData()
     {
-        $response = $this->get(self::BASIC_URL.'?vnr=00123456&gesellschaft=abc', ['Accept' => 'application/json']);
+        $response = $this->get(self::BASIC_URL.'?aid=00123456&gesellschaft=abc', ['Accept' => 'application/json']);
 
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJson(
             [
-                'message' => 'Makler not found',
+                'message' => 'Agent not found',
             ]
         );
     }

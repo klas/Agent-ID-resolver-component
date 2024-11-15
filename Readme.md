@@ -10,9 +10,9 @@
 ## API
 Um eine korrekt formatierte JSON-Antwort einschließlich Fehlermeldungen zu erhalten, ist der Request-Header `Accept: application/json` zu senden.
 
-##### Makler API
-* Show: GET `/api/makler?vnr={VNR}&gesellschaft={GESELLSCHAFT NAME}` - erwartet immer VNR und Gesellschaft Name
-* Beispiel ANfrage: `http://localhost/api/makler?vnr=00654564&gesellschaft=Haftpflichtkasse Darmstadt`
+##### Agent API
+* Show: GET `/api/agent?aid={AID}&gesellschaft={GESELLSCHAFT NAME}` - erwartet immer AID und Gesellschaft Name
+* Beispiel ANfrage: `http://localhost/api/agent?aid=00654564&gesellschaft=Haftpflichtkasse Darmstadt`
 * Beilspiel Antwort:
 `  {
   "name": "Max Mustermann"
@@ -25,10 +25,10 @@ Um eine korrekt formatierte JSON-Antwort einschließlich Fehlermeldungen zu erha
 ============================================
 ## Struktur
 * Die Umwandlung wird durch die Umwandlungsstrategie gewährleistet,
-* Die VnrStepFilteringResolvingStrategy basiert auf Filterdefinitionen nach dem Chain-of-Responsibility-Muster, wobei jede Definition entscheidet, ob sie für die Anfrage zuständig ist. Anschließend wird der Filter Builder verwendet, um Zeichenketten entsprechend dem erwarteten Format zu bereinigen und normalisierte VNR zu erhalten.
+* Die AidStepFilteringResolvingStrategy basiert auf Filterdefinitionen nach dem Chain-of-Responsibility-Muster, wobei jede Definition entscheidet, ob sie für die Anfrage zuständig ist. Anschließend wird der Filter Builder verwendet, um Zeichenketten entsprechend dem erwarteten Format zu bereinigen und normalisierte AID zu erhalten.
 
 ## Beschränkungen
-* Nur VnrStepFilteringResolvingStrategy ist implementiert
+* Nur AidStepFilteringResolvingStrategy ist implementiert
 * Es gibt keine Berechtigungsprüfung
 
 ============================================
@@ -40,14 +40,14 @@ Bei der Aufgabe geht es primär darum, dass wir zusammen ins Review gehen könne
 
 Solltest du noch Fragen haben dann melde dich bitte gerne!
 
-### Vermittlernummern (VNR)
-Die Gesellschaften vergeben eindeutige Nummern an die Makler, um Verträge und andere
+### Vermittlernummern (AID)
+Die Gesellschaften vergeben eindeutige Nummern an die Agent, um Verträge und andere
 Korrespondenzen zuordnen zu können.
 
 Die Vermittlernummer ist innerhalb einer Gesellschaft immer eindeutig.
 
-In sämtlichen Importen in unser System (Verträge und Kunden) wird die VNR genutzt, um
-den richtigen Nutzer (Makler) zu ermitteln.
+In sämtlichen Importen in unser System (Verträge und Kunden) wird die AID genutzt, um
+den richtigen Nutzer (Agent) zu ermitteln.
 
 Das Problem ist, dass die Nummer über verschiedene Quellen in unterschiedlichen
 Formaten angegeben wird, also mehrere Formate zulässig sind.
@@ -75,11 +75,11 @@ Die Komponente liefert uns daraufhin, wenn vorhanden, den User-Eintrag aus der
 Datenbank.
 
 Die Datenbank sieht grob so aus:
-- Wir haben Gesellschaften, Makler und Vermittlernummern.
-- Ein Makler hat mehrere Vermittlernummern.
-- Ein Makler kann auch zu einer Gesellschaft verschiedene Nummern haben.
+- Wir haben Gesellschaften, Agent und Vermittlernummern.
+- Ein Agent hat mehrere Vermittlernummern.
+- Ein Agent kann auch zu einer Gesellschaft verschiedene Nummern haben.
 
-Gesellschaften haben jeweils Vermittlernummern zu mehreren Maklern.
+Gesellschaften haben jeweils Vermittlernummern zu mehreren Agentn.
 
 Ein paar Beispiele zu den Formaten (ähnliche Fälle in der Realität).
 
@@ -114,11 +114,11 @@ Hierbei kannst du dich direkt mit Composer und Migrations beschäftigen.
 Welches von den aktuellen Frameworks du nutzt ist dabei dir überlassen.
 
 ### Beispielszenario
-Wir haben in der Datenbank zu dem Makler Max Mustermann und der Gesellschaft Ideal
+Wir haben in der Datenbank zu dem Agent Max Mustermann und der Gesellschaft Ideal
 die Vermittlernummer „006674BA23“ hinterlegt.
 Nun wird ein Vertrag importiert (nur als Beispiel) bei dem die Vermittlernummer „6674-
 BA23“ eingetragen ist.
-Die Komponente soll dann also auf die Frage, welchem Makler die Vermittlernummer
+Die Komponente soll dann also auf die Frage, welchem Agent die Vermittlernummer
 „6674-BA23“ bei der Ideal-Versicherung gehört mit dem Eintrag (Max, Mustermann)
 antworten.
 

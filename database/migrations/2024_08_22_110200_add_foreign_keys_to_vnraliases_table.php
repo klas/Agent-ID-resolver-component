@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('vnraliases', function (Blueprint $table) {
+        Schema::table('aidaliases', function (Blueprint $table) {
             $table->foreign(['gm_id'], 'gm_fk')->references(['id'])
-                ->on('gesellschafts_maklers')->onUpdate('CASCADE')->onDelete('CASCADE');
+                ->on('gesellschafts_agents')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('vnraliases', function (Blueprint $table) {
+        Schema::table('aidaliases', function (Blueprint $table) {
             $table->dropForeign('gm_fk');
         });
     }

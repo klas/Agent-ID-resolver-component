@@ -3,60 +3,60 @@
 namespace App\Strategy;
 
 use App\Builder\StepFilterBuilderInterface;
-use App\DTO\MaklerDTO;
-use App\Models\Vnralias;
+use App\DTO\AgentDTO;
+use App\Models\Aidalias;
 
 use Illuminate\Support\Facades\App;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
-class VnrStepFilteringResolvingStrategy implements VnrResolvingStrategyInterface
+class AidStepFilteringResolvingStrategy implements AidResolvingStrategyInterface
 {
-    use VnrResolvingStrategyHelper;
+    use AidResolvingStrategyHelper;
 
     public function __construct(protected StepFilterBuilderInterface $stepFilterBuilder) {}
 
-    public function resolve(array $data = []): ?MaklerDTO
+    public function resolve(array $data = []): ?AgentDTO
     {
-        if (! isset($data['gesellschaft']) || ! isset($data['vnr'])) {
+        if (! isset($data['gesellschaft']) || ! isset($data['aid'])) {
             throw new InvalidArgumentException;
         }
 
         // Try to match with stored aliases
-        $makler = $this->getMaklerPerExactVnr($data['gesellschaft'], $data['vnr']);
+        $agent = $this->getAgentPerExactAid($data['gesellschaft'], $data['aid']);
 
         // No 100% match, try matching filtered value
-        if (! $makler) {
-            $searchableAliases = $this->getSearchableVnrAliases($data['gesellschaft']);
-            $filteredVnr = $this->filterVnr($data['vnr'], $data['gesellschaft']);
-            $alias = $searchableAliases->whereStrict('name', $filteredVnr)->first();
-            if ($makler = $alias?->gesellschafts_makler->makler) {
-                Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
+        if (! $agent) {
+            $searchableAliases = $this->getSearchableAidAliases($data['gesellschaft']);
+            $filteredAid = $this->filterAid($data['aid'], $data['gesellschaft']);
+            $alias = $searchableAliases->whereStrict('name', $filteredAid)->first();
+            if ($agent = $alias?->gesellschafts_agent->agent) {
+                Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
             }
         }
 
         // Still no match, try matching filtered stored aliases with filtered value,
         // if match store unfiltered and filtered value for next time for performance
-        if (! $makler) {
-            $searchableAliases->each(function ($alias) use (&$makler, $filteredVnr, $data) {
-                if ($filteredVnr === $this->filterVnr($alias->name, $data['gesellschaft'])) {
-                    $makler = $alias?->gesellschafts_makler->makler;
-                    Vnralias::create(['name' => $data['vnr'], 'gm_id' => $alias->gm_id]);
-                    Vnralias::create(['name' => $filteredVnr, 'gm_id' => $alias->gm_id]);
+        if (! $agent) {
+            $searchableAliases->each(function ($alias) use (&$agent, $filteredAid, $data) {
+                if ($filteredAid === $this->filterAid($alias->name, $data['gesellschaft'])) {
+                    $agent = $alias?->gesellschafts_agent->agent;
+                    Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
+                    Aidalias::create(['name' => $filteredAid, 'gm_id' => $alias->gm_id]);
 
                     return false; // break loop
                 }
             });
         }
 
-        if ($makler) {
-            return new MaklerDTO($makler->name);
+        if ($agent) {
+            return new AgentDTO($agent->name);
         }
 
         return null;
     }
 
-    protected function filterVnr(string $filterable, string $gesellschaft): ?string
+    protected function filterAid(string $filterable, string $gesellschaft): ?string
     {
         $filterDefinitions = App::tagged('filter_definition');
 

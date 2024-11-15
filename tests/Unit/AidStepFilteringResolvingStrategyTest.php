@@ -3,17 +3,17 @@
 namespace Tests\Unit;
 
 use App\Builder\StepFilterBuilderInterface;
-use App\DTO\MaklerDTO;
+use App\DTO\AgentDTO;
 use App\Models\Gesellschaft;
-use App\Models\Makler;
-use App\Models\Vnralias;
-use App\Strategy\VnrStepFilteringResolvingStrategy;
+use App\Models\Agent;
+use App\Models\Aidalias;
+use App\Strategy\AidStepFilteringResolvingStrategy;
 use ReflectionClass;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\Doubles\TestFilterDefinition;
 use Tests\TestCase;
 
-class VnrStepFilteringResolvingStrategyTest extends TestCase
+class AidStepFilteringResolvingStrategyTest extends TestCase
 {
     private $strategy;
 
@@ -25,42 +25,42 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
 
         $this->stepFilterBuilderMock = $this->getMockBuilder(StepFilterBuilderInterface::class)
             ->getMock();
-        $this->strategy = new VnrStepFilteringResolvingStrategy($this->stepFilterBuilderMock);
+        $this->strategy = new AidStepFilteringResolvingStrategy($this->stepFilterBuilderMock);
     }
 
     public function testResolveExactMatch()
     {
-        $data = ['gesellschaft' => 'Test Gesellschaft', 'vnr' => '12345'];
-        $makler = Makler::create(['name' => 'Test Makler']);
+        $data = ['gesellschaft' => 'Test Gesellschaft', 'aid' => '12345'];
+        $agent = Agent::create(['name' => 'Test Agent']);
         $gesellschaft = Gesellschaft::create(['name' => 'Test Gesellschaft']);
-        $gesellschaft->maklers()->attach($makler);
+        $gesellschaft->agents()->attach($agent);
         $gesellschaft->save();
         $gesellschaft->refresh();
 
-        $makler = $gesellschaft->maklers->firstWhere('id', '==', $makler->id);
-        $vnralias = Vnralias::create(['name' => '12345', 'gm_id' => $makler->pivot->id]);
+        $agent = $gesellschaft->agents->firstWhere('id', '==', $agent->id);
+        $aidalias = Aidalias::create(['name' => '12345', 'gm_id' => $agent->pivot->id]);
 
         $this->stepFilterBuilderMock->expects($this->never())
             ->method('setFilterable');  // Should not be called for exact match
 
         $result = $this->strategy->resolve($data);
-        $this->assertInstanceOf(MaklerDTO::class, $result);
-        $this->assertEquals($makler->name, $result->name);
+        $this->assertInstanceOf(AgentDTO::class, $result);
+        $this->assertEquals($agent->name, $result->name);
     }
 
     public function testResolveFilteredMatch()
     {
         $this->addTestFilterDefinition();
 
-        $data = ['gesellschaft' => 'Test Gesellschaft', 'vnr' => '12345x'];
-        $makler = Makler::create(['name' => 'Test Makler']);
+        $data = ['gesellschaft' => 'Test Gesellschaft', 'aid' => '12345x'];
+        $agent = Agent::create(['name' => 'Test Agent']);
         $gesellschaft = Gesellschaft::create(['name' => 'Test Gesellschaft']);
-        $gesellschaft->maklers()->attach($makler);
+        $gesellschaft->agents()->attach($agent);
         $gesellschaft->save();
         $gesellschaft->refresh();
 
-        $makler = $gesellschaft->maklers->firstWhere('id', '==', $makler->id);
-        $vnralias = Vnralias::create(['name' => '12345', 'gm_id' => $makler->pivot->id]);
+        $agent = $gesellschaft->agents->firstWhere('id', '==', $agent->id);
+        $aidalias = Aidalias::create(['name' => '12345', 'gm_id' => $agent->pivot->id]);
 
         $this->stepFilterBuilderMock->expects($this->atLeastOnce())
             ->method('setFilterable')
@@ -70,15 +70,15 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
             ->willReturn('12345');
 
         $result = $this->strategy->resolve($data);
-        $this->assertInstanceOf(MaklerDTO::class, $result);
-        $this->assertEquals($makler->name, $result->name);
+        $this->assertInstanceOf(AgentDTO::class, $result);
+        $this->assertEquals($agent->name, $result->name);
     }
 
     public function testResolveNoMatch()
     {
         $this->addTestFilterDefinition();
 
-        $data = ['gesellschaft' => 'Test Gesellschaft', 'vnr' => '12345'];
+        $data = ['gesellschaft' => 'Test Gesellschaft', 'aid' => '12345'];
 
         $this->stepFilterBuilderMock->expects($this->once())
             ->method('setFilterable')
@@ -99,7 +99,7 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
         $this->strategy->resolve($data);
     }
 
-    public function testFilterVnr()
+    public function testFilterAid()
     {
         $this->addTestFilterDefinition();
 
@@ -114,80 +114,80 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
             ->willReturn('12345');
 
         $reflection = new ReflectionClass($this->strategy);
-        $method = $reflection->getMethod('filterVnr');
+        $method = $reflection->getMethod('filterAid');
         $method->setAccessible(true);
 
         $result = $method->invokeArgs($this->strategy, [$filterable, $gesellschaft]);
         $this->assertEquals('12345', $result);
     }
 
-    public function testResolveReturnsMaklerDTOSuccessfullyOnExactVnrMatch()
+    public function testResolveReturnsAgentDTOSuccessfullyOnExactAidMatch()
     {
-        // Create a partial mock of the strategy to override `getMaklerPerExactVnr`
-        $strategy = $this->getMockBuilder(VnrStepFilteringResolvingStrategy::class)
+        // Create a partial mock of the strategy to override `getAgentPerExactAid`
+        $strategy = $this->getMockBuilder(AidStepFilteringResolvingStrategy::class)
             ->setConstructorArgs([$this->stepFilterBuilderMock])
-            ->onlyMethods(['getMaklerPerExactVnr'])
+            ->onlyMethods(['getAgentPerExactAid'])
             ->getMock();
 
-        // Stub `getMaklerPerExactVnr` to return a mock "Makler" object with a name
-        $strategy->method('getMaklerPerExactVnr')->willReturn(new Makler(['name' => 'MaklerName']));
+        // Stub `getAgentPerExactAid` to return a mock "Agent" object with a name
+        $strategy->method('getAgentPerExactAid')->willReturn(new Agent(['name' => 'AgentName']));
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'vnr' => 'some_vnr'];
+        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
 
         $result = $strategy->resolve($data);
 
-        $this->assertInstanceOf(MaklerDTO::class, $result);
-        $this->assertEquals('MaklerName', $result->name);
+        $this->assertInstanceOf(AgentDTO::class, $result);
+        $this->assertEquals('AgentName', $result->name);
     }
 
     public function testResolveFiltersAndFindsAlias()
     {
         // Create a partial mock of the strategy to override methods
-        $strategy = $this->getMockBuilder(VnrStepFilteringResolvingStrategy::class)
+        $strategy = $this->getMockBuilder(AidStepFilteringResolvingStrategy::class)
             ->setConstructorArgs([$this->stepFilterBuilderMock])
-            ->onlyMethods(['getMaklerPerExactVnr', 'getSearchableVnrAliases', 'filterVnr'])
+            ->onlyMethods(['getAgentPerExactAid', 'getSearchableAidAliases', 'filterAid'])
             ->getMock();
 
-        // Stub `getMaklerPerExactVnr` to return null (no exact match)
-        $strategy->method('getMaklerPerExactVnr')->willReturn(null);
+        // Stub `getAgentPerExactAid` to return null (no exact match)
+        $strategy->method('getAgentPerExactAid')->willReturn(null);
 
-        // Stub `getSearchableVnrAliases` to return a collection with a matching alias
+        // Stub `getSearchableAidAliases` to return a collection with a matching alias
         $mockAlias = (object) [
-            'name' => 'filtered_vnr',
-            'gesellschafts_makler' => (object) ['makler' => (object) ['name' => 'MaklerFromAlias']],
+            'name' => 'filtered_aid',
+            'gesellschafts_agent' => (object) ['agent' => (object) ['name' => 'AgentFromAlias']],
             'gm_id' => 1,
         ];
-        $strategy->method('getSearchableVnrAliases')->willReturn(collect([$mockAlias]));
+        $strategy->method('getSearchableAidAliases')->willReturn(collect([$mockAlias]));
 
-        // Stub `filterVnr` to return a filtered value that matches alias name
-        $strategy->method('filterVnr')->willReturn('filtered_vnr');
+        // Stub `filterAid` to return a filtered value that matches alias name
+        $strategy->method('filterAid')->willReturn('filtered_aid');
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'vnr' => 'some_vnr'];
+        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
 
         $result = $strategy->resolve($data);
 
-        $this->assertInstanceOf(MaklerDTO::class, $result);
-        $this->assertEquals('MaklerFromAlias', $result->name);
+        $this->assertInstanceOf(AgentDTO::class, $result);
+        $this->assertEquals('AgentFromAlias', $result->name);
     }
 
     public function testResolveThrowsNotFoundHttpExceptionIfFilterDefinitionIsMissing()
     {
         // Create a partial mock of the strategy to override methods
-        $strategy = $this->getMockBuilder(VnrStepFilteringResolvingStrategy::class)
+        $strategy = $this->getMockBuilder(AidStepFilteringResolvingStrategy::class)
             ->setConstructorArgs([$this->stepFilterBuilderMock])
-            ->onlyMethods(['getMaklerPerExactVnr', 'getSearchableVnrAliases', 'filterVnr'])
+            ->onlyMethods(['getAgentPerExactAid', 'getSearchableAidAliases', 'filterAid'])
             ->getMock();
 
-        // Stub `getMaklerPerExactVnr` to return null
-        $strategy->method('getMaklerPerExactVnr')->willReturn(null);
+        // Stub `getAgentPerExactAid` to return null
+        $strategy->method('getAgentPerExactAid')->willReturn(null);
 
-        // Stub `getSearchableVnrAliases` to return an empty collection
-        $strategy->method('getSearchableVnrAliases')->willReturn(collect());
+        // Stub `getSearchableAidAliases` to return an empty collection
+        $strategy->method('getSearchableAidAliases')->willReturn(collect());
 
-        // Make `filterVnr` throw the NotFoundHttpException
-        $strategy->method('filterVnr')->willThrowException(new NotFoundHttpException('Filter Definition Not Found'));
+        // Make `filterAid` throw the NotFoundHttpException
+        $strategy->method('filterAid')->willThrowException(new NotFoundHttpException('Filter Definition Not Found'));
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'vnr' => 'some_vnr'];
+        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
 
         $this->expectException(NotFoundHttpException::class);
         $this->expectExceptionMessage('Filter Definition Not Found');
@@ -198,17 +198,17 @@ class VnrStepFilteringResolvingStrategyTest extends TestCase
     public function testResolveReturnsNullIfNoMatchIsFound()
     {
         // Create a partial mock of the strategy to override methods
-        $strategy = $this->getMockBuilder(VnrStepFilteringResolvingStrategy::class)
+        $strategy = $this->getMockBuilder(AidStepFilteringResolvingStrategy::class)
             ->setConstructorArgs([$this->stepFilterBuilderMock])
-            ->onlyMethods(['getMaklerPerExactVnr', 'getSearchableVnrAliases', 'filterVnr'])
+            ->onlyMethods(['getAgentPerExactAid', 'getSearchableAidAliases', 'filterAid'])
             ->getMock();
 
         // Stub methods to simulate no match found
-        $strategy->method('getMaklerPerExactVnr')->willReturn(null);
-        $strategy->method('getSearchableVnrAliases')->willReturn(collect());
-        $strategy->method('filterVnr')->willReturn(null);
+        $strategy->method('getAgentPerExactAid')->willReturn(null);
+        $strategy->method('getSearchableAidAliases')->willReturn(collect());
+        $strategy->method('filterAid')->willReturn(null);
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'vnr' => 'some_vnr'];
+        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
 
         $result = $strategy->resolve($data);
 
