@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property string $name
  * @property int $gm_id
- * @property GesellschaftsAgent $gesellschafts_agent
+ * @property CompaniesAgent $companies_agent
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Aidalias newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Aidalias newQuery()
@@ -40,8 +40,8 @@ class Aidalias extends Model
         'gm_id',
     ];
 
-    public function gesellschafts_agent()
+    public function companies_agent()
     {
-        return $this->belongsTo(GesellschaftsAgent::class, 'gm_id');
+        return $this->belongsTo(CompaniesAgent::class, 'gm_id');
     }
 }

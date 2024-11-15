@@ -17,7 +17,7 @@ class TestFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of(Str::lower($name))->snake() === 'test_gesellschaft';
+        return (string) Str::of(Str::lower($name))->snake() === 'test_company';
     }
 
     public function runFilterChain(): void

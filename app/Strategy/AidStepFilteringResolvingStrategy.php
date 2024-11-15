@@ -18,19 +18,19 @@ class AidStepFilteringResolvingStrategy implements AidResolvingStrategyInterface
 
     public function resolve(array $data = []): ?AgentDTO
     {
-        if (! isset($data['gesellschaft']) || ! isset($data['aid'])) {
+        if (! isset($data['company']) || ! isset($data['aid'])) {
             throw new InvalidArgumentException;
         }
 
         // Try to match with stored aliases
-        $agent = $this->getAgentPerExactAid($data['gesellschaft'], $data['aid']);
+        $agent = $this->getAgentPerExactAid($data['company'], $data['aid']);
 
         // No 100% match, try matching filtered value
         if (! $agent) {
-            $searchableAliases = $this->getSearchableAidAliases($data['gesellschaft']);
-            $filteredAid = $this->filterAid($data['aid'], $data['gesellschaft']);
+            $searchableAliases = $this->getSearchableAidAliases($data['company']);
+            $filteredAid = $this->filterAid($data['aid'], $data['company']);
             $alias = $searchableAliases->whereStrict('name', $filteredAid)->first();
-            if ($agent = $alias?->gesellschafts_agent->agent) {
+            if ($agent = $alias?->companies_agent->agent) {
                 Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
             }
         }
@@ -39,8 +39,8 @@ class AidStepFilteringResolvingStrategy implements AidResolvingStrategyInterface
         // if match store unfiltered and filtered value for next time for performance
         if (! $agent) {
             $searchableAliases->each(function ($alias) use (&$agent, $filteredAid, $data) {
-                if ($filteredAid === $this->filterAid($alias->name, $data['gesellschaft'])) {
-                    $agent = $alias?->gesellschafts_agent->agent;
+                if ($filteredAid === $this->filterAid($alias->name, $data['company'])) {
+                    $agent = $alias?->companies_agent->agent;
                     Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
                     Aidalias::create(['name' => $filteredAid, 'gm_id' => $alias->gm_id]);
 
@@ -56,7 +56,7 @@ class AidStepFilteringResolvingStrategy implements AidResolvingStrategyInterface
         return null;
     }
 
-    protected function filterAid(string $filterable, string $gesellschaft): ?string
+    protected function filterAid(string $filterable, string $company): ?string
     {
         $filterDefinitions = App::tagged('filter_definition');
 
@@ -64,7 +64,7 @@ class AidStepFilteringResolvingStrategy implements AidResolvingStrategyInterface
         $handlerFound = false;
 
         foreach ($filterDefinitions as $filterDefinition) {
-            if ($handlerFound = $filterDefinition->responsible($gesellschaft)) {
+            if ($handlerFound = $filterDefinition->responsible($company)) {
                 $filterDefinition->setStepFilterBuilder($this->stepFilterBuilder);
                 $filterDefinition->runFilterChain();
                 break;

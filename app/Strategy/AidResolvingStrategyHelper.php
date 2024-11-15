@@ -2,8 +2,8 @@
 
 namespace App\Strategy;
 
-use App\Models\Gesellschaft;
-use App\Models\GesellschaftsAgent;
+use App\Models\Company;
+use App\Models\CompaniesAgent;
 use App\Models\Agent;
 use App\Models\Aidalias;
 use Illuminate\Support\Collection;
@@ -11,20 +11,20 @@ use function Psy\debug;
 
 trait AidResolvingStrategyHelper
 {
-    protected function getSearchableAidAliases(string $gesellschaft): Collection
+    protected function getSearchableAidAliases(string $company): Collection
     {
-        $gesellschaft = Gesellschaft::whereName($gesellschaft)->with('agents')->first();
+        $company = Company::whereName($company)->with('agents')->first();
         $searchableAliases = collect([]);
 
-        $gesellschaft?->agents->each(function ($agent) use (&$searchableAliases) {
+        $company?->agents->each(function ($agent) use (&$searchableAliases) {
             $searchableAliases = $searchableAliases->merge($agent->pivot->aidaliases);
         });
 
         return $searchableAliases;
     }
 
-    protected function getAgentPerExactAid(string $gesellschaft, string $aid): ?Agent
+    protected function getAgentPerExactAid(string $company, string $aid): ?Agent
     {
-        return Aidalias::where('name', '=', $aid)->with('gesellschafts_agent')->first()?->gesellschafts_agent->agent;
+        return Aidalias::where('name', '=', $aid)->with('companies_agent')->first()?->companies_agent->agent;
     }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('aidaliases', function (Blueprint $table) {
             $table->foreign(['gm_id'], 'gm_fk')->references(['id'])
-                ->on('gesellschafts_agents')->onUpdate('CASCADE')->onDelete('CASCADE');
+                ->on('companies_agents')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }
 

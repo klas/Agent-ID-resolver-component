@@ -9,7 +9,7 @@ trait TestDataTrait
         'not_max' => 'Not Max',
     ];
 
-    public const GESELSCHAFTS = [
+    public const COMPANIES = [
         'max' => [
             'Haftpflichtkasse Darmstadt' => ['00654564', '654564', '654-564'],
             'WWK' => ['Q412548787', '412548787', 'QQ412548787'],

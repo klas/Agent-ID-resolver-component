@@ -17,17 +17,17 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
 
     public function resolve(array $data = []): ?AgentDTO
     {
-        if (! isset($data['gesellschaft']) || ! isset($data['aid'])) {
+        if (! isset($data['company']) || ! isset($data['aid'])) {
             throw new InvalidArgumentException;
         }
 
         // Try to match with stored aliases
-        $agent = $this->getAgentPerExactAid($data['gesellschaft'], $data['aid']);
+        $agent = $this->getAgentPerExactAid($data['company'], $data['aid']);
 
         $debug = [];
 
         if (! $agent) {
-            $searchableAidAliases = $this->getSearchableAidAliases($data['gesellschaft']);
+            $searchableAidAliases = $this->getSearchableAidAliases($data['company']);
 
             $searchableAidAliases->each(function ($alias) use (&$agent, $data, &$debug) {
 
@@ -65,7 +65,7 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
                 dump($debug);*/
 
                 if ($match) {
-                    $agent = $alias?->gesellschafts_agent->agent;
+                    $agent = $alias?->companies_agent->agent;
 
                     // Store alias
                     Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
@@ -78,7 +78,7 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
         }
 
         /*$debug[] = [
-            [$data['gesellschaft'], $data['aid'], $agent?->name],
+            [$data['company'], $data['aid'], $agent?->name],
         ];
 
         dump($debug);*/

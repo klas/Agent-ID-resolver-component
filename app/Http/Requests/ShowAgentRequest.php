@@ -23,7 +23,7 @@ class ShowAgentRequest extends FormRequest
     {
         return [
             'aid' => ['required', 'string'],
-            'gesellschaft' => ['required', 'string'],
+            'company' => ['required', 'string'],
         ];
     }
 }

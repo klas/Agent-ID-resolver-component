@@ -4,7 +4,7 @@ namespace Tests\Unit;
 
 use App\Builder\StepFilterBuilderInterface;
 use App\DTO\AgentDTO;
-use App\Models\Gesellschaft;
+use App\Models\Company;
 use App\Models\Agent;
 use App\Models\Aidalias;
 use App\Strategy\AidStepFilteringResolvingStrategy;
@@ -30,14 +30,14 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
 
     public function testResolveExactMatch()
     {
-        $data = ['gesellschaft' => 'Test Gesellschaft', 'aid' => '12345'];
+        $data = ['company' => 'Test Company', 'aid' => '12345'];
         $agent = Agent::create(['name' => 'Test Agent']);
-        $gesellschaft = Gesellschaft::create(['name' => 'Test Gesellschaft']);
-        $gesellschaft->agents()->attach($agent);
-        $gesellschaft->save();
-        $gesellschaft->refresh();
+        $company = Company::create(['name' => 'Test Company']);
+        $company->agents()->attach($agent);
+        $company->save();
+        $company->refresh();
 
-        $agent = $gesellschaft->agents->firstWhere('id', '==', $agent->id);
+        $agent = $company->agents->firstWhere('id', '==', $agent->id);
         $aidalias = Aidalias::create(['name' => '12345', 'gm_id' => $agent->pivot->id]);
 
         $this->stepFilterBuilderMock->expects($this->never())
@@ -52,14 +52,14 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
     {
         $this->addTestFilterDefinition();
 
-        $data = ['gesellschaft' => 'Test Gesellschaft', 'aid' => '12345x'];
+        $data = ['company' => 'Test Company', 'aid' => '12345x'];
         $agent = Agent::create(['name' => 'Test Agent']);
-        $gesellschaft = Gesellschaft::create(['name' => 'Test Gesellschaft']);
-        $gesellschaft->agents()->attach($agent);
-        $gesellschaft->save();
-        $gesellschaft->refresh();
+        $company = Company::create(['name' => 'Test Company']);
+        $company->agents()->attach($agent);
+        $company->save();
+        $company->refresh();
 
-        $agent = $gesellschaft->agents->firstWhere('id', '==', $agent->id);
+        $agent = $company->agents->firstWhere('id', '==', $agent->id);
         $aidalias = Aidalias::create(['name' => '12345', 'gm_id' => $agent->pivot->id]);
 
         $this->stepFilterBuilderMock->expects($this->atLeastOnce())
@@ -78,7 +78,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
     {
         $this->addTestFilterDefinition();
 
-        $data = ['gesellschaft' => 'Test Gesellschaft', 'aid' => '12345'];
+        $data = ['company' => 'Test Company', 'aid' => '12345'];
 
         $this->stepFilterBuilderMock->expects($this->once())
             ->method('setFilterable')
@@ -93,7 +93,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
 
     public function testResolveInvalidData()
     {
-        $data = ['gesellschaft' => 'Test Gesellschaft'];
+        $data = ['company' => 'Test Company'];
 
         $this->expectException(\InvalidArgumentException::class);
         $this->strategy->resolve($data);
@@ -104,7 +104,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
         $this->addTestFilterDefinition();
 
         $filterable = '12345x';
-        $gesellschaft = 'Test Gesellschaft';
+        $company = 'Test Company';
 
         $this->stepFilterBuilderMock->expects($this->once())
             ->method('setFilterable')
@@ -117,7 +117,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
         $method = $reflection->getMethod('filterAid');
         $method->setAccessible(true);
 
-        $result = $method->invokeArgs($this->strategy, [$filterable, $gesellschaft]);
+        $result = $method->invokeArgs($this->strategy, [$filterable, $company]);
         $this->assertEquals('12345', $result);
     }
 
@@ -132,7 +132,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
         // Stub `getAgentPerExactAid` to return a mock "Agent" object with a name
         $strategy->method('getAgentPerExactAid')->willReturn(new Agent(['name' => 'AgentName']));
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
+        $data = ['company' => 'some_company', 'aid' => 'some_aid'];
 
         $result = $strategy->resolve($data);
 
@@ -154,7 +154,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
         // Stub `getSearchableAidAliases` to return a collection with a matching alias
         $mockAlias = (object) [
             'name' => 'filtered_aid',
-            'gesellschafts_agent' => (object) ['agent' => (object) ['name' => 'AgentFromAlias']],
+            'companies_agent' => (object) ['agent' => (object) ['name' => 'AgentFromAlias']],
             'gm_id' => 1,
         ];
         $strategy->method('getSearchableAidAliases')->willReturn(collect([$mockAlias]));
@@ -162,7 +162,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
         // Stub `filterAid` to return a filtered value that matches alias name
         $strategy->method('filterAid')->willReturn('filtered_aid');
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
+        $data = ['company' => 'some_company', 'aid' => 'some_aid'];
 
         $result = $strategy->resolve($data);
 
@@ -187,7 +187,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
         // Make `filterAid` throw the NotFoundHttpException
         $strategy->method('filterAid')->willThrowException(new NotFoundHttpException('Filter Definition Not Found'));
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
+        $data = ['company' => 'some_company', 'aid' => 'some_aid'];
 
         $this->expectException(NotFoundHttpException::class);
         $this->expectExceptionMessage('Filter Definition Not Found');
@@ -208,7 +208,7 @@ class AidStepFilteringResolvingStrategyTest extends TestCase
         $strategy->method('getSearchableAidAliases')->willReturn(collect());
         $strategy->method('filterAid')->willReturn(null);
 
-        $data = ['gesellschaft' => 'some_gesellschaft', 'aid' => 'some_aid'];
+        $data = ['company' => 'some_company', 'aid' => 'some_aid'];
 
         $result = $strategy->resolve($data);
 

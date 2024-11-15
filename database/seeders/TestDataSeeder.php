@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Gesellschaft;
+use App\Models\Company;
 use App\Models\Agent;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +13,7 @@ class TestDataSeeder extends Seeder
     public function run(?int $dataColumn = null): void
     {
         $agentsData = self::AGENTS;
-        $gesellschaftsAids = self::GESELSCHAFTS;
+        $companiesAids = self::COMPANIES;
 
         $agents = [];
 
@@ -21,10 +21,10 @@ class TestDataSeeder extends Seeder
             $agents[$key] = Agent::create(['name' => $agentName]);
         }
 
-        foreach ($gesellschaftsAids as $key => $agentAids) {
-            foreach ($agentAids as $gesellschaft => $aids) {
-                $ges = Gesellschaft::firstOrCreate(
-                    ['name' => $gesellschaft]
+        foreach ($companiesAids as $key => $agentAids) {
+            foreach ($agentAids as $company => $aids) {
+                $ges = Company::firstOrCreate(
+                    ['name' => $company]
                 );
 
                 $ges->agents()->attach($agents[$key]);

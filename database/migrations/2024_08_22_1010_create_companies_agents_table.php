@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gesellschafts_agents', function (Blueprint $table) {
+        Schema::create('companies_agents', function (Blueprint $table) {
             $table->id()->primary();
-            //$table->foreignIdFor(Gesellschafts::class);
+            //$table->foreignIdFor(Companies::class);
             //$table->foreignIdFor(Agents::class);
-            $table->bigInteger('gesellschaft_id')->unsigned()->index('gesellschaft_id');
+            $table->bigInteger('company_id')->unsigned()->index('company_id');
             $table->bigInteger('agent_id')->unsigned()->index('agent_id');
 
-            $table->unique(['gesellschaft_id', 'agent_id']);
+            $table->unique(['company_id', 'agent_id']);
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('gesellschafts_agents');
+        Schema::dropIfExists('companies_agents');
     }
 };

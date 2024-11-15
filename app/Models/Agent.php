@@ -14,9 +14,9 @@ use Illuminate\Database\Eloquent\Model;
  *
  * @property int $id
  * @property string $name
- * @property Collection|Gesellschaft[] $gesellschafts
- * @property-read \App\Models\GesellschaftsAgent $pivot
- * @property-read int|null $gesellschafts_count
+ * @property Collection|Company[] $companies
+ * @property-read \App\Models\CompaniesAgent $pivot
+ * @property-read int|null $companies_count
  *
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Agent newQuery()
@@ -36,10 +36,10 @@ class Agent extends Model
         'name',
     ];
 
-    public function gesellschafts()
+    public function companies()
     {
-        return $this->belongsToMany(Gesellschaft::class, 'gesellschafts_agents')
+        return $this->belongsToMany(Company::class, 'companies_agents')
             ->withPivot('id')
-            ->using(GesellschaftsAgent::class);
+            ->using(CompaniesAgent::class);
     }
 }

@@ -18,16 +18,16 @@ class ApiAgentResolverTest extends TestCase
     public function testShowReturnsValidData()
     {
         $agents = self::AGENTS;
-        $gesellschaftsAids = self::GESELSCHAFTS;
+        $companiesAids = self::COMPANIES;
 
         for ($x = 0; $x < self::COLUMN_COUNT; $x++) {
             Artisan::call('migrate:fresh');
             App::make(TestDataSeeder::class)->run($x);
 
-            foreach ($gesellschaftsAids as $key => $agentAids) {
-                foreach ($agentAids as $gesellschaft => $aids) {
+            foreach ($companiesAids as $key => $agentAids) {
+                foreach ($agentAids as $company => $aids) {
                     foreach ($aids as $aid) {
-                        $response = $this->getJson(self::BASIC_URL."?aid=$aid&gesellschaft=$gesellschaft");
+                        $response = $this->getJson(self::BASIC_URL."?aid=$aid&company=$company");
                         //dump($x);
                         //$response->baseRequest->dump();
                         //$response->dump();
@@ -49,7 +49,7 @@ class ApiAgentResolverTest extends TestCase
 
     public function testShowReturnsErrorOnInvalidData()
     {
-        $response = $this->get(self::BASIC_URL.'?aid=00123456&gesellschaft=abc', ['Accept' => 'application/json']);
+        $response = $this->get(self::BASIC_URL.'?aid=00123456&company=abc', ['Accept' => 'application/json']);
 
         $response->assertStatus(Response::HTTP_NOT_FOUND);
         $response->assertJson(
