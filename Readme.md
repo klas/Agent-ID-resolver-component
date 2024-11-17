@@ -2,7 +2,7 @@
 
 
 ## Introduction
-What started as a job test project has now expanded into an example Laravel Application: Agent Id resolver component - a lookup component that resolves an Agent from an Agent ID and the corresponding company name.
+What started as a job test project has now expanded into an more extensive example Laravel Application: an Agent Id resolver component - a lookup component that resolves an Agent from an Agent ID and the corresponding company name. 
 
 ### The basic problem solved
 AId-s come from various data sources in different formats, so we need to map them to the right agent. E.g. the following numbers are considered identical:
@@ -11,12 +11,28 @@ AId-s come from various data sources in different formats, so we need to map the
 - 6674-BA23
 
 ### Features
-* JSON API
-* The following design patterns are in use beside standard Laravel patterns: 
-  1. Builder Pattern to build the right filter chain for each company
-  2. Chain of Responsibility for filter chain definitions
-  3. Strategy to provide different resolving strategies: implemented are Filtering and Fuzzy Matching strategies. Active strategy is defined in the AppServiceProvider by binding to AidResolvingStrategyInterface.
-* Tested using Http/Integration and Unit tests
+#### JSON API
+* To receive a correctly formatted JSON response including error messages send the request header `Accept: application/json`.
+
+* Show: GET `/api/agent?aid={AID}&company={COMPANY NAME}` - requires AID und Company Name
+* Example request: `http://localhost/api/agent?aid=00654564&company=Haftpflichtkasse Darmstadt`
+* Example answer:
+  `  {
+  "name": "Max Mustermann"
+  }`
+
+#### Architecture - Design patterns
+Beside standard Laravel structure, the code uses the following design patterns: 
+  1. **Builder Pattern** to build the right filter chain for each company
+  2. **Chain of Responsibility** for filter chain definitions
+  3. **Strategy** to provide different resolving strategies: implemented are Filtering and Fuzzy Matching strategies. Active strategy is defined in the AppServiceProvider by binding to AidResolvingStrategyInterface.
+
+#### Various test examples
+Tested using Laravel native API testing Http/Integration and Unit tests
+
+## Limitations
+* Only AidStepFilteringResolvingStrategy and AidFuzzyResolvingStrategy are currently implemented
+* There is no authorization check
 
 ## Installation
 * Clone the Repo
@@ -32,24 +48,10 @@ AId-s come from various data sources in different formats, so we need to map the
 * Run migrations und seeders: `vendor/bin/sail artisan migrate:fresh --seed`
 * Publish the API: `vendor/bin/sail artisan install:api`
 
-## Agent JSON API
-To receive a correctly formatted JSON response including error messages send the request header `Accept: application/json`.
-
-* Show: GET `/api/agent?aid={AID}&company={COMPANY NAME}` - requires AID und Company Name
-* Example request: `http://localhost/api/agent?aid=00654564&company=Haftpflichtkasse Darmstadt`
-* Example answer:
-`  {
-  "name": "Max Mustermann"
-  }`
-
 ## Testing
 * Run tests `vendor/bin/sail artisan test`
 
-## Limitations
-* Only AidStepFilteringResolvingStrategy and AidFuzzyResolvingStrategy are currently implemented
-* There is no authorization check
-
-## Examples of different formats
+## Additional Info: Examples of different input formats
 **Liability Insurance Magenstadt**
 - 00654564
 - 654564
