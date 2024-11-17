@@ -10,6 +10,7 @@ use InvalidArgumentException;
 
 class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
 {
+    private const FUZZY_THRESHOLD = 87;
 
     use AidResolvingStrategyHelper;
 
@@ -51,7 +52,7 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
                 $fuzzy = $this->fuzzy->fuzzyWuzzy($shorterVar, $longerVar);
                 $diff = $this->fuzzy->stringDiff($shorterVar, $longerVar);
 
-                $match = $fuzzy == 100 || ($fuzzy >= 87 && ! preg_match('~[1-9]+~', $diff));
+                $match = $fuzzy == 100 || ($fuzzy >= self::FUZZY_THRESHOLD && ! preg_match('~[1-9]+~', $diff));
 
                 /*$debug[] = [
                     [$shorterVar, $longerVar],
