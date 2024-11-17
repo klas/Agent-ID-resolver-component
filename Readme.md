@@ -24,7 +24,7 @@ AId-s come from various data sources in different formats, so we need to map the
 Beside standard Laravel structure, the code uses the following design patterns: 
   1. **Builder Pattern** to build the right filter chain for each company
   2. **Chain of Responsibility** for filter chain definitions
-  3. **Strategy** to provide different resolving strategies: implemented are Filtering and Fuzzy Matching strategies. Active strategy is defined in the AppServiceProvider by binding to AidResolvingStrategyInterface.
+  3. **Strategy** to provide different resolving strategies: implemented are Filtering strategy the resolves name using different string filters and Fuzzy Matching strategy that matches using fuzzy matching algorithms, mainly using the FuzzyWuzzy library. Active strategy is defined in the AppServiceProvider by binding to AidResolvingStrategyInterface.
 
 #### Various test examples
 Tested using Laravel native API testing Http/Integration and Unit tests
