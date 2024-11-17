@@ -5,7 +5,7 @@ namespace App\CoR\FilterDefinitions;
 use App\Builder\StepFilterBuilderInterface;
 use Illuminate\Support\Str;
 
-class HaftpflichtkasseDarmstadtFilterDefinition implements FilterDefinitionInterface
+class LiabilityInsuranceMagenstadtFilterDefinition implements FilterDefinitionInterface
 {
     protected StepFilterBuilderInterface $stepFilterBuilder;
 
@@ -16,7 +16,7 @@ class HaftpflichtkasseDarmstadtFilterDefinition implements FilterDefinitionInter
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of(Str::lower($name))->snake() === 'haftpflichtkasse_darmstadt';
+        return (string) Str::of(Str::lower($name))->snake() === 'liability_insurance_magenstadt';
     }
 
     public function runFilterChain(): void

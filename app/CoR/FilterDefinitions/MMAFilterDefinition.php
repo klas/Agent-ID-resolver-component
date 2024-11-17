@@ -5,7 +5,7 @@ namespace App\CoR\FilterDefinitions;
 use App\Builder\StepFilterBuilderInterface;
 use Illuminate\Support\Str;
 
-class WWKFilterDefinition implements FilterDefinitionInterface
+class MMAFilterDefinition implements FilterDefinitionInterface
 {
     protected StepFilterBuilderInterface $stepFilterBuilder;
 
@@ -16,7 +16,7 @@ class WWKFilterDefinition implements FilterDefinitionInterface
 
     public function responsible(string $name): bool
     {
-        return (string) Str::of(Str::lower($name))->snake() === 'wwk';
+        return (string) Str::of(Str::lower($name))->snake() === 'mma';
     }
 
     public function runFilterChain(): void

@@ -1,125 +1,76 @@
+# Agent ID resolver component
+
+
+## Introduction
+What started as a job test project has now expanded into an example Laravel Application: Agent Id resolver component - a lookup component that resolves an Agent from an Agent ID and the corresponding company name.
+
+### The basic problem solved
+AId-s come from various data sources in different formats, so we need to map them to the right agent. E.g. the following numbers are considered identical:
+- 006674BA23
+- 6674BA23
+- 6674-BA23
+
+### Features
+* JSON API
+* The following design patterns are in use beside standard Laravel patterns: 
+  1. Builder Pattern to build the right filter chain for each company
+  2. Chain of Responsibility for filter chain definitions
+  3. Strategy to provide different resolving strategies: implemented are Filtering and Fuzzy Matching strategies. Active strategy is defined in the AppServiceProvider by binding to AidResolvingStrategyInterface.
+* Tested using Http/Integration and Unit tests
+
 ## Installation
-* Klone das Repo
-* Herstellerabhängigkeiten installieren: `docker run --rm --interactive --tty --volume $PWD:/app composer install --ignore-platform-reqs --no-scripts`
-* Bei fehlenden Klassen: `docker run --rm --interactive --tty --volume $PWD:/app composer dump-autoload`
-* env-Datei kopieren: `cp .env.example .env`
-* Container starten: `vendor/bin/sail up -d`
-* RMigrationen und Seeders ausführen: `vendor/bin/sail artisan migrate:fresh --seed`
-* API veröffentlichen: `vendor/bin/sail artisan install:api`
+* Clone the Repo
+* Install dependencies: `docker run --rm \
+  -u "$(id -u):$(id -g)" \
+  -v "$(pwd):/var/www/html" \
+  -w /var/www/html \
+  laravelsail/php82-composer:latest \
+  composer install --ignore-platform-reqs`
+* If some Classes are missing: `docker run --rm --interactive --tty --volume $PWD:/app composer dump-autoload`
+* copy .env-file: `cp .env.example .env`
+* Start the Container: `vendor/bin/sail up -d`
+* Run migrations und seeders: `vendor/bin/sail artisan migrate:fresh --seed`
+* Publish the API: `vendor/bin/sail artisan install:api`
 
-## API
-Um eine korrekt formatierte JSON-Antwort einschließlich Fehlermeldungen zu erhalten, ist der Request-Header `Accept: application/json` zu senden.
+## Agent JSON API
+To receive a correctly formatted JSON response including error messages send the request header `Accept: application/json`.
 
-##### Agent API
-* Show: GET `/api/agent?aid={AID}&company={COMPANY NAME}` - erwartet immer AID und Company Name
-* Beispiel ANfrage: `http://localhost/api/agent?aid=00654564&company=Haftpflichtkasse Darmstadt`
-* Beilspiel Antwort:
+* Show: GET `/api/agent?aid={AID}&company={COMPANY NAME}` - requires AID und Company Name
+* Example request: `http://localhost/api/agent?aid=00654564&company=Haftpflichtkasse Darmstadt`
+* Example answer:
 `  {
   "name": "Max Mustermann"
   }`
 
-## Testen
-* Tests ausführen `vendor/bin/sail artisan test`
+## Testing
+* Run tests `vendor/bin/sail artisan test`
 
+## Limitations
+* Only AidStepFilteringResolvingStrategy and AidFuzzyResolvingStrategy are currently implemented
+* There is no authorization check
 
-============================================
-## Struktur
-* Die Umwandlung wird durch die Umwandlungsstrategie gewährleistet,
-* Die AidStepFilteringResolvingStrategy basiert auf Filterdefinitionen nach dem Chain-of-Responsibility-Muster, wobei jede Definition entscheidet, ob sie für die Anfrage zuständig ist. Anschließend wird der Filter Builder verwendet, um Zeichenketten entsprechend dem erwarteten Format zu bereinigen und normalisierte AID zu erhalten.
-
-## Beschränkungen
-* Nur AidStepFilteringResolvingStrategy ist implementiert
-* Es gibt keine Berechtigungsprüfung
-
-============================================
-### Einleitung
-Folgend findest du wie besprochen eine kleine Aufgabe, die eine unserer realen Herausforderungen zeigt.
-
-Bei der Umsetzung haben wir dir bewusst alles offen gehalten. Damit es für dich nicht ausartet solltest du nicht mehr als 2-4h dafür investieren.
-Bei der Aufgabe geht es primär darum, dass wir zusammen ins Review gehen können, damit wir uns noch besser kennenlernen.
-
-Solltest du noch Fragen haben dann melde dich bitte gerne!
-
-### Vermittlernummern (AID)
-Die Companyen vergeben eindeutige Nummern an die Agent, um Verträge und andere
-Korrespondenzen zuordnen zu können.
-
-Die Vermittlernummer ist innerhalb einer Company immer eindeutig.
-
-In sämtlichen Importen in unser System (Verträge und Kunden) wird die AID genutzt, um
-den richtigen Nutzer (Agent) zu ermitteln.
-
-Das Problem ist, dass die Nummer über verschiedene Quellen in unterschiedlichen
-Formaten angegeben wird, also mehrere Formate zulässig sind.
-
-Die folgenden Nummern sind hierbei identisch:
-- 006674BA23
-- 6674BA23
-- 6674-BA23
-
-Die Formate sind dabei von Company zu Company unterschiedlich (siehe Beispiele).
-
-### Aufgabe:
-Benötigt wird eine Komponente, die eine der Nummern und die zugehörige Company
-angegeben bekommt und daraufhin den richtigen Eintrag in der Datenbank ermittelt. Der
-Eintrag in der Datenbank **kann in jedem dieser Formate** sein. Dh. Eine Normalform in
-der Datenbank nehmen wir für diese Aufgabe als nicht praktikabel an. Der Hintergrund ist
-dabei zum Einen, dass zum Zeitpunkt der Anlage der Vermittlernummer keine bzw. nicht
-alle Formate bekannt sind und zum Zweiten, dass die Aufgabe dann einfach interessanter
-ist :)
-
-Zum Zeitpunkt des Imports ist uns die Company und die importierte Vermittlernummer
-bekannt.
-
-Die Komponente liefert uns daraufhin, wenn vorhanden, den User-Eintrag aus der
-Datenbank.
-
-Die Datenbank sieht grob so aus:
-- Wir haben Companyen, Agent und Vermittlernummern.
-- Ein Agent hat mehrere Vermittlernummern.
-- Ein Agent kann auch zu einer Company verschiedene Nummern haben.
-
-Companyen haben jeweils Vermittlernummern zu mehreren Agentn.
-
-Ein paar Beispiele zu den Formaten (ähnliche Fälle in der Realität).
-
-**Haftpflichtkasse Darmstadt:**
+## Examples of different formats
+**Liability Insurance Magenstadt**
 - 00654564
 - 654564
 - 654-564
 
-**WWK**
+**MMA**
 - Q412548787
 - 412548787
 
-**Axa Versicherung**
+**Mama Insurance**
 - 15154184714-000
 - 15154184714
 - 99/15154184714
 
-**Ideal Versicherung:**
+**Bimbo Insurance:**
 - 006674BA23
 - 6674BA23
 - 6674-BA23
-(Die Buchstaben sind Teil der Nummer)
+  (Die Buchstaben sind Teil der Nummer)
 
-**die Bayerische**
+**Die Hard**
 - 54501R784
 - 54501-R784
 - 54501784
-
-
-Als Zusatz würden wir gerne, dass die Aufgabe mit Hilfe eine Frameworks erledigt wird.
-Hierbei kannst du dich direkt mit Composer und Migrations beschäftigen.
-Welches von den aktuellen Frameworks du nutzt ist dabei dir überlassen.
-
-### Beispielszenario
-Wir haben in der Datenbank zu dem Agent Max Mustermann und der Company Ideal
-die Vermittlernummer „006674BA23“ hinterlegt.
-Nun wird ein Vertrag importiert (nur als Beispiel) bei dem die Vermittlernummer „6674-
-BA23“ eingetragen ist.
-Die Komponente soll dann also auf die Frage, welchem Agent die Vermittlernummer
-„6674-BA23“ bei der Ideal-Versicherung gehört mit dem Eintrag (Max, Mustermann)
-antworten.
-
-Analog dazu dann die anderen Beispiele zu den Formaten der Companyen

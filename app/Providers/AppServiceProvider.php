@@ -4,11 +4,11 @@ namespace App\Providers;
 
 use App\Builder\IdMatcherStepFilterBuilder;
 use App\Builder\StepFilterBuilderInterface;
-use App\CoR\FilterDefinitions\AxaVersicherungFilterDefinition;
-use App\CoR\FilterDefinitions\DieBayerischeFilterDefinition;
-use App\CoR\FilterDefinitions\HaftpflichtkasseDarmstadtFilterDefinition;
-use App\CoR\FilterDefinitions\IdealVersicherungFilterDefinition;
-use App\CoR\FilterDefinitions\WWKFilterDefinition;
+use App\CoR\FilterDefinitions\MamaInsuranceFilterDefinition;
+use App\CoR\FilterDefinitions\DieHardFilterDefinition;
+use App\CoR\FilterDefinitions\LiabilityInsuranceMagenstadtFilterDefinition;
+use App\CoR\FilterDefinitions\BimboInsuranceFilterDefinition;
+use App\CoR\FilterDefinitions\MMAFilterDefinition;
 use App\Services\FuzzyInterface;
 use App\Services\FuzzyService;
 use App\Strategy\AidFuzzyResolvingStrategy;
@@ -32,11 +32,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->tag(
             [
-                AxaVersicherungFilterDefinition::class,
-                DieBayerischeFilterDefinition::class,
-                HaftpflichtkasseDarmstadtFilterDefinition::class,
-                IdealVersicherungFilterDefinition::class,
-                WWKFilterDefinition::class,
+                MamaInsuranceFilterDefinition::class,
+                DieHardFilterDefinition::class,
+                LiabilityInsuranceMagenstadtFilterDefinition::class,
+                BimboInsuranceFilterDefinition::class,
+                MMAFilterDefinition::class,
             ],
             'filter_definition');
 
