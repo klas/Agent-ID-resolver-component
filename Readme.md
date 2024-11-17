@@ -2,8 +2,7 @@
 
 
 ## Introduction
-What started as a job test project has now expanded into an more extensive example Laravel Application: an Agent Id resolver component - a lookup component that resolves an Agent from an Agent ID and the corresponding company name. 
-
+What started as a job test project has now expanded into an more extensive example Laravel Application: an Agent Id resolver component that resolves an Agent from an Agent ID (that comes in various formats) and the corresponding company name.
 ### The basic problem solved
 AId-s come from various data sources in different formats, so we need to map them to the right agent. E.g. the following numbers are considered identical:
 - 006674BA23
