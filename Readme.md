@@ -14,7 +14,7 @@ AId-s come from various data sources in different formats, so we need to map the
 * To receive a correctly formatted JSON response including error messages send the request header `Accept: application/json`.
 
 * Show: GET `/api/agent?aid={AID}&company={COMPANY NAME}` - requires AID und Company Name
-* Example request: `http://localhost/api/agent?aid=00654564&company=Haftpflichtkasse Darmstadt`
+* Example request: `http://localhost/api/agent?aid=00654564&company=Liability Insurance Magenstadt`
 * Example answer:
   `  {
   "name": "Max Mustermann"
