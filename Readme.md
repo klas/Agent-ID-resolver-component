@@ -47,7 +47,6 @@ Tested using Laravel native API testing Http/Integration and Unit tests
 * copy .env-file: `cp .env.example .env`
 * Start the Container: `vendor/bin/sail up -d`
 * Run migrations und seeders: `vendor/bin/sail artisan migrate:fresh --seed`
-* Publish the API: `vendor/bin/sail artisan install:api`
 
 ## Testing
 * Run tests `vendor/bin/sail artisan test`
