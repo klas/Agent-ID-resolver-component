@@ -37,11 +37,11 @@ Tested using Laravel native API testing Http/Integration and Unit tests
 
 ## Installation
 * Clone the Repo
-* Install dependencies: `docker run --rm \
-  -u "$(id -u):$(id -g)" \
-  -v "$(pwd):/var/www/html" \
-  -w /var/www/html \
-  laravelsail/php82-composer:latest \
+* Install dependencies: `docker run --rm 
+  -u "$(id -u):$(id -g)" 
+  -v "$(pwd):/var/www/html" 
+  -w /var/www/html 
+  laravelsail/php82-composer:latest 
   composer install --ignore-platform-reqs`
 * If some Classes are missing: `docker run --rm --interactive --tty --volume $PWD:/app composer dump-autoload`
 * copy .env-file: `cp .env.example .env`
