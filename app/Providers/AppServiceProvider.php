@@ -4,10 +4,10 @@ namespace App\Providers;
 
 use App\Builder\IdMatcherStepFilterBuilder;
 use App\Builder\StepFilterBuilderInterface;
-use App\CoR\FilterDefinitions\MamaInsuranceFilterDefinition;
+use App\CoR\FilterDefinitions\BimboInsuranceFilterDefinition;
 use App\CoR\FilterDefinitions\DieHardFilterDefinition;
 use App\CoR\FilterDefinitions\LiabilityInsuranceMagenstadtFilterDefinition;
-use App\CoR\FilterDefinitions\BimboInsuranceFilterDefinition;
+use App\CoR\FilterDefinitions\MamaInsuranceFilterDefinition;
 use App\CoR\FilterDefinitions\MMAFilterDefinition;
 use App\Services\FuzzyInterface;
 use App\Services\FuzzyService;
@@ -45,8 +45,5 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    public function boot(): void
-    {
-        //
-    }
+    public function boot(): void {}
 }
