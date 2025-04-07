@@ -8,6 +8,7 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -53,7 +54,7 @@ class Handler extends ExceptionHandler
         $error = [
             'status' => 500,
             'title' => 'Internal Server Error',
-            'detail' => config('app.debug') ? $e->getMessage() : 'An unexpected error occurred.',
+            'detail' => Config::get('app.debug') ? $e->getMessage() : 'An unexpected error occurred.',
         ];
 
         // Handle specific exception types
@@ -82,16 +83,17 @@ class Handler extends ExceptionHandler
             $error['detail'] = 'You are not authenticated to perform this action.';
         }
 
-        if ($e instanceof ModelNotFoundException) {
+        if ($e instanceof NotFoundHttpException) {
+            $error['status'] = 404;
+            $error['title'] = $e->getMessage() ?? 'Not Found';
+            $error['detail'] = 'The requested resource does not exist.';
+        }
+
+        // Needs to come after NotFoundHttpException as it is mapped to it by parent handler
+        if ($e->getPrevious() instanceof ModelNotFoundException) {
             $error['status'] = 404;
             $error['title'] = 'Resource Not Found';
             $error['detail'] = 'The requested resource could not be found.';
-        }
-
-        if ($e instanceof NotFoundHttpException) {
-            $error['status'] = 404;
-            $error['title'] = 'Not Found';
-            $error['detail'] = 'The requested resource does not exist.';
         }
 
         if ($e instanceof MethodNotAllowedHttpException) {
