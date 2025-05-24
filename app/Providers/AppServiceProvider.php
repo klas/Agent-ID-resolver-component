@@ -25,10 +25,7 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     public $bindings = [
-        // Strategy bindings
-        AidResolvingStrategyInterface::class => AidFuzzyResolvingStrategy::class,
-        // AidResolvingStrategyInterface::class => AidStepFilteringResolvingStrategy::class,
-
+        // Strategy bindings will be set in the register() method to allow config access
         // Service bindings
         StepFilterBuilderInterface::class => IdMatcherStepFilterBuilder::class,
         FuzzyInterface::class => FuzzyService::class,
@@ -41,6 +38,12 @@ class AppServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+        // Bind the AID resolution strategy based on config
+        $this->app->bind(
+            AidResolvingStrategyInterface::class,
+            config('aid_resolution.default_strategy')
+        );
+
         $this->app->tag(
             [
                 MamaInsuranceFilterDefinition::class,

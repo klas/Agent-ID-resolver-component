@@ -15,7 +15,7 @@ class ApiAgentResolverTest extends TestCase
 
     use TestDataTrait;
 
-    public function testShowReturnsValidData()
+    public function test_show_returns_valid_data()
     {
         $agents = self::AGENTS;
         $companiesAids = self::COMPANIES;
@@ -28,10 +28,10 @@ class ApiAgentResolverTest extends TestCase
                 foreach ($agentAids as $company => $aids) {
                     foreach ($aids as $aid) {
                         $response = $this->getJson(self::BASIC_URL."?aid=$aid&company=$company");
-                        //dump($x);
-                        //$response->baseRequest->dump();
-                        //$response->dump();
-                        //dump($agents[$key]);
+                        // dump($x);
+                        // $response->baseRequest->dump();
+                        // $response->dump();
+                        // dump($agents[$key]);
 
                         $response->assertStatus(Response::HTTP_OK);
                         $response->assertJson(
@@ -47,7 +47,7 @@ class ApiAgentResolverTest extends TestCase
 
     }
 
-    public function testShowReturnsErrorOnInvalidData()
+    public function test_show_returns_error_on_invalid_data()
     {
         $response = $this->get(self::BASIC_URL.'?aid=00123456&company=abc', ['Accept' => 'application/json']);
 
