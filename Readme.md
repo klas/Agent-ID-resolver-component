@@ -68,10 +68,11 @@ Tested using Laravel native API testing Http/Integration and Unit tests
 - 99/15154184714
 
 **Bimbo Insurance:**
+
+(Letters are part of the AID)
 - 006674BA23
 - 6674BA23
 - 6674-BA23
-  (Die Buchstaben sind Teil der Nummer)
 
 **Die Hard**
 - 54501R784
