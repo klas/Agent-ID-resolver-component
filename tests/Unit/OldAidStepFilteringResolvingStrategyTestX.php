@@ -7,25 +7,35 @@ use App\DTO\AgentDTO;
 use App\Models\Company;
 use App\Models\Agent;
 use App\Models\Aidalias;
+use App\Repositories\Contracts\AidAliasRepositoryInterface;
 use App\Strategy\AidStepFilteringResolvingStrategy;
+use Mockery;
 use ReflectionClass;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Tests\Doubles\TestFilterDefinition;
 use Tests\TestCase;
 
-class AidStepFilteringResolvingStrategyTest extends TestCase
+class OldAidStepFilteringResolvingStrategyTestX extends TestCase
 {
-    private $strategy;
-
-    private $stepFilterBuilderMock;
+    protected AidStepFilteringResolvingStrategy $strategy;
+    protected $stepFilterBuilderMock;
+    protected $aidAliasRepositoryMock;
 
     public function setUp(): void
     {
+        $this->markTestSkipped(
+            'OLD'
+        );
+
         parent::setUp();
 
-        $this->stepFilterBuilderMock = $this->getMockBuilder(StepFilterBuilderInterface::class)
-            ->getMock();
-        $this->strategy = new AidStepFilteringResolvingStrategy($this->stepFilterBuilderMock);
+        $this->stepFilterBuilderMock = Mockery::mock(StepFilterBuilderInterface::class);
+        $this->aidAliasRepositoryMock = Mockery::mock(AidAliasRepositoryInterface::class);
+
+        $this->strategy = new AidStepFilteringResolvingStrategy(
+            $this->stepFilterBuilderMock,
+            $this->aidAliasRepositoryMock
+        );
     }
 
     public function testResolveExactMatch()

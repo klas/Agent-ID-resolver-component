@@ -4,7 +4,7 @@ namespace App\Strategy;
 
 use App\Builder\StepFilterBuilderInterface;
 use App\DTO\AgentDTO;
-use App\Models\Aidalias;
+use App\Repositories\Contracts\AidAliasRepositoryInterface;
 use App\Services\FuzzyInterface;
 use InvalidArgumentException;
 
@@ -12,9 +12,11 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
 {
     private const FUZZY_THRESHOLD = 87;
 
-    use AidResolvingStrategyHelper;
-
-    public function __construct(protected StepFilterBuilderInterface $stepFilterBuilder, protected FuzzyInterface $fuzzy) {}
+    public function __construct(
+        protected StepFilterBuilderInterface $stepFilterBuilder,
+        protected FuzzyInterface $fuzzy,
+        protected AidAliasRepositoryInterface $aidAliasRepository
+    ) {}
 
     public function resolve(array $data = []): ?AgentDTO
     {
@@ -23,18 +25,24 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
         }
 
         // Try to match with stored aliases
-        $agent = $this->getAgentPerExactAid($data['company'], $data['aid']);
-
-        $debug = [];
+        $agent = $this->aidAliasRepository->getAgentByExactAid($data['company'], $data['aid']);
 
         if (! $agent) {
-            $searchableAidAliases = $this->getSearchableAidAliases($data['company']);
+            $searchableAidAliases = $this->aidAliasRepository->getSearchableAidAliases($data['company']);
 
-            $searchableAidAliases->each(function ($alias) use (&$agent, $data, &$debug) {
-
+            foreach ($searchableAidAliases as $alias) {
                 // First remove obvious noise
-                $var1 = $this->stepFilterBuilder->setFilterable($alias->name)->filterPrefixChars('9')->filterNonAlphaNumeric()->getFiltered();
-                $var2 = $this->stepFilterBuilder->setFilterable($data['aid'])->filterPrefixChars('9')->filterNonAlphaNumeric()->getFiltered();
+                $var1 = $this->stepFilterBuilder
+                    ->setFilterable($alias->name)
+                    ->filterPrefixChars('9')
+                    ->filterNonAlphaNumeric()
+                    ->getFiltered();
+
+                $var2 = $this->stepFilterBuilder
+                    ->setFilterable($data['aid'])
+                    ->filterPrefixChars('9')
+                    ->filterNonAlphaNumeric()
+                    ->getFiltered();
 
                 $var1Len = strlen($var1);
                 $var2Len = strlen($var2);
@@ -47,7 +55,7 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
                     $longerVar = $var1;
                 }
 
-                //Now try to fuzzy match
+                // Now try to fuzzy match
                 $similarityScore = $this->fuzzy->textSimilarity($shorterVar, $longerVar, $percent);
                 $fuzzy = $this->fuzzy->fuzzyWuzzy($shorterVar, $longerVar);
                 $diff = $this->fuzzy->stringDiff($shorterVar, $longerVar);
@@ -66,16 +74,17 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
                 dump($debug);*/
 
                 if ($match) {
-                    $agent = $alias?->companies_agent->agent;
+                    $agent = $alias->companies_agent->agent;
 
-                    // Store alias
-                    Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
+                    // Store alias using repository
+                    $this->aidAliasRepository->create([
+                        'name' => $data['aid'],
+                        'gm_id' => $alias->gm_id,
+                    ]);
 
-                    return false; // break loop
+                    break; // Exit loop
                 }
-
-            });
-
+            }
         }
 
         /*$debug[] = [
@@ -84,10 +93,6 @@ class AidFuzzyResolvingStrategy implements AidResolvingStrategyInterface
 
         dump($debug);*/
 
-        if ($agent) {
-            return new AgentDTO($agent->name);
-        }
-
-        return null;
+        return $agent ? new AgentDTO($agent->name) : null;
     }
 }

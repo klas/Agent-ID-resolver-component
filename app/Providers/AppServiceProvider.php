@@ -9,6 +9,12 @@ use App\CoR\FilterDefinitions\DieHardFilterDefinition;
 use App\CoR\FilterDefinitions\LiabilityInsuranceMagenstadtFilterDefinition;
 use App\CoR\FilterDefinitions\MamaInsuranceFilterDefinition;
 use App\CoR\FilterDefinitions\MMAFilterDefinition;
+use App\Repositories\AgentRepository;
+use App\Repositories\AidAliasRepository;
+use App\Repositories\CompanyRepository;
+use App\Repositories\Contracts\AgentRepositoryInterface;
+use App\Repositories\Contracts\AidAliasRepositoryInterface;
+use App\Repositories\Contracts\CompanyRepositoryInterface;
 use App\Services\FuzzyInterface;
 use App\Services\FuzzyService;
 use App\Strategy\AidFuzzyResolvingStrategy;
@@ -19,15 +25,20 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
     public $bindings = [
-        //AidResolvingStrategyInterface::class => AidStepFilteringResolvingStrategy::class,
+        // Strategy bindings
         AidResolvingStrategyInterface::class => AidFuzzyResolvingStrategy::class,
+        // AidResolvingStrategyInterface::class => AidStepFilteringResolvingStrategy::class,
+
+        // Service bindings
         StepFilterBuilderInterface::class => IdMatcherStepFilterBuilder::class,
         FuzzyInterface::class => FuzzyService::class,
+
+        // Repository bindings
+        AgentRepositoryInterface::class => AgentRepository::class,
+        CompanyRepositoryInterface::class => CompanyRepository::class,
+        AidAliasRepositoryInterface::class => AidAliasRepository::class,
     ];
 
-    /**
-     * Register any application services.
-     */
     public function register(): void
     {
         $this->app->tag(
@@ -38,12 +49,9 @@ class AppServiceProvider extends ServiceProvider
                 BimboInsuranceFilterDefinition::class,
                 MMAFilterDefinition::class,
             ],
-            'filter_definition');
-
+            'filter_definition'
+        );
     }
 
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void {}
 }

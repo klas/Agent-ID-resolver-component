@@ -4,17 +4,17 @@ namespace App\Strategy;
 
 use App\Builder\StepFilterBuilderInterface;
 use App\DTO\AgentDTO;
-use App\Models\Aidalias;
-
+use App\Repositories\Contracts\AidAliasRepositoryInterface;
 use Illuminate\Support\Facades\App;
 use InvalidArgumentException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class AidStepFilteringResolvingStrategy implements AidResolvingStrategyInterface
 {
-    use AidResolvingStrategyHelper;
-
-    public function __construct(protected StepFilterBuilderInterface $stepFilterBuilder) {}
+    public function __construct(
+        protected StepFilterBuilderInterface $stepFilterBuilder,
+        protected AidAliasRepositoryInterface $aidAliasRepository
+    ) {}
 
     public function resolve(array $data = []): ?AgentDTO
     {
@@ -23,37 +23,49 @@ class AidStepFilteringResolvingStrategy implements AidResolvingStrategyInterface
         }
 
         // Try to match with stored aliases
-        $agent = $this->getAgentPerExactAid($data['company'], $data['aid']);
+        $agent = $this->aidAliasRepository->getAgentByExactAid($data['company'], $data['aid']);
 
         // No 100% match, try matching filtered value
         if (! $agent) {
-            $searchableAliases = $this->getSearchableAidAliases($data['company']);
             $filteredAid = $this->filterAid($data['aid'], $data['company']);
-            $alias = $searchableAliases->whereStrict('name', $filteredAid)->first();
-            if ($agent = $alias?->companies_agent->agent) {
-                Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
+
+            // $filteredAid can be null, findByFilteredAid requires string
+            $alias = $filteredAid ? $this->aidAliasRepository->findByFilteredAid($data['company'], $filteredAid) : null;
+
+            if ($alias && ($agent = $alias->companies_agent->agent)) {
+                $this->aidAliasRepository->create([
+                    'name' => $data['aid'],
+                    'gm_id' => $alias->gm_id,
+                ]);
             }
         }
 
-        // Still no match, try matching filtered stored aliases with filtered value,
-        // if match store unfiltered and filtered value for next time for performance
+        // Still no match, try matching filtered stored aliases with filtered value
         if (! $agent) {
-            $searchableAliases->each(function ($alias) use (&$agent, $filteredAid, $data) {
-                if ($filteredAid === $this->filterAid($alias->name, $data['company'])) {
-                    $agent = $alias?->companies_agent->agent;
-                    Aidalias::create(['name' => $data['aid'], 'gm_id' => $alias->gm_id]);
-                    Aidalias::create(['name' => $filteredAid, 'gm_id' => $alias->gm_id]);
+            $filteredAid = $filteredAid ?? $this->filterAid($data['aid'], $data['company']);
+            $searchableAliases = $this->aidAliasRepository->getSearchableAidAliases($data['company']);
 
-                    return false; // break loop
+            foreach ($searchableAliases as $alias) {
+                $aliasFilteredAid = $this->filterAid($alias->name, $data['company']);
+                if ($filteredAid === $aliasFilteredAid) {
+                    $agent = $alias->companies_agent->agent;
+
+                    // Store both unfiltered and filtered aliases
+                    $this->aidAliasRepository->create([
+                        'name' => $data['aid'],
+                        'gm_id' => $alias->gm_id,
+                    ]);
+                    $this->aidAliasRepository->create([
+                        'name' => $filteredAid,
+                        'gm_id' => $alias->gm_id,
+                    ]);
+
+                    break; // Exit loop
                 }
-            });
+            }
         }
 
-        if ($agent) {
-            return new AgentDTO($agent->name);
-        }
-
-        return null;
+        return $agent ? new AgentDTO($agent->name) : null;
     }
 
     protected function filterAid(string $filterable, string $company): ?string
